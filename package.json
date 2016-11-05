@@ -1,0 +1,17 @@
+{
+  "name": "zrim-core-js",
+  "version": "0.1.0",
+  "description": "Contains core library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "zrim-everything",
+    "core",
+    "library",
+    "utils"
+  ],
+  "author": "yogo95 (yogo95@zrim-everything.eu)",
+  "license": "ISC"
+}
