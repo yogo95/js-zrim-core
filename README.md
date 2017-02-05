@@ -33,7 +33,7 @@ The module expose some generic exceptions.
 ### IllegalStateException
 
 ``
-var IllegalStateException = require('ubiservices-generic-managers').exceptions.IllegalStateException;
+var IllegalStateException = require('js-zrim-core').exceptions.IllegalStateException;
 ``
 
 ## Code Example
@@ -42,7 +42,7 @@ var IllegalStateException = require('ubiservices-generic-managers').exceptions.I
 
 Require the BaseObject
 ```
-var BaseObject = require('ubiservices-generic-managers').BaseObject;
+var BaseObject = require('js-zrim-core').BaseObject;
 
 // Use base object
 
@@ -329,12 +329,12 @@ override the function **_handleFinalization**.
 
 Production
 ```
-npm install --production ubiservices-generic-managers
+npm install --production js-zrim-core
 ```
 
 Build or Development
 ```
-npm install ubiservices-generic-managers
+npm install js-zrim-core
 ```
 
 
@@ -348,4 +348,4 @@ npm test
 
 ## License
 
-UbiServices 2016, All Rights Reserved
+Zrim-Everything - yogo95 - CeCILL v2
