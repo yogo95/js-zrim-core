@@ -13,5 +13,10 @@
     "utils"
   ],
   "author": "yogo95 (yogo95@zrim-everything.eu)",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "events": "^1.1.1",
+    "lodash": "^4.17.4",
+    "winston": "^2.3.1"
+  }
 }
