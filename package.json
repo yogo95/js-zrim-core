@@ -6,6 +6,10 @@
   "scripts": {
     "test": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine-node/lib/jasmine-node/cli.js tests/ -- --captureExceptions --color --verbose"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yogo95/js-zrim-core.git"
+  },
   "keywords": [
     "zrim-everything",
     "core",
