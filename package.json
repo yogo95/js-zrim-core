@@ -1,5 +1,5 @@
 {
-  "name": "zrim-core-js",
+  "name": "js-zrim-core",
   "version": "0.1.0",
   "description": "Contains core library",
   "main": "index.js",
@@ -13,7 +13,7 @@
     "utils"
   ],
   "author": "yogo95 (yogo95@zrim-everything.eu)",
-  "license": "ISC",
+  "license": "CeCILL v2",
   "dependencies": {
     "events": "^1.1.1",
     "lodash": "^4.17.4",
