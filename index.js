@@ -18,12 +18,13 @@ function requireSubModule() {
 
 }
 
-requireSubModule.BaseObject = require("./lib/baseObject");
+requireSubModule.BaseObject = require("./lib/BaseObject");
 requireSubModule.InitializableObject = require("./lib/InitializableObject");
-requireSubModule.ConnectableObject = require("./lib/connectableObject");
-requireSubModule.ProxyLogger = require("./lib/proxyLogger");
+requireSubModule.ConnectableObject = require("./lib/ConnectableObject");
+requireSubModule.ProxyLogger = require("./lib/ProxyLogger");
 
 // Contains exceptions
 requireSubModule.exceptions = require("./lib/exceptions/index");
+requireSubModule.common = require("./lib/common/index");
 
 exports = module.exports = requireSubModule;
