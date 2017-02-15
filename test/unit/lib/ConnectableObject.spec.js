@@ -2,14 +2,14 @@
  * Unit Test - ConnectableObject
  */
 
-var ConnectableObject = require("../../../lib/ConnectableObject");
+const ConnectableObject = require("../../../lib/ConnectableObject");
 
-var _ = require('lodash'),
+const _ = require('lodash'),
   InitializableObject = require('../../../lib/InitializableObject'),
   IllegalStateException = require("../../../lib/exceptions/IllegalStateException")
   ;
 
-var DEFAULT_TIMEOUT = 2000;
+const DEFAULT_TIMEOUT = 2000;
 
 describe("Unit Test - ConnectableObject", function () {
 
@@ -22,7 +22,7 @@ describe("Unit Test - ConnectableObject", function () {
     it("Must have the expected States", function () {
       expect(ConnectableObject.States).toEqual(jasmine.any(Object));
       if (_.isObject(ConnectableObject.States)) {
-        var expectedStates = _.merge({
+        const expectedStates = _.merge({
           Connecting: "Connecting",
           Disconnecting: "Disconnecting"
         }, InitializableObject.States);
@@ -34,7 +34,7 @@ describe("Unit Test - ConnectableObject", function () {
     it("Must have the expected Signals", function () {
       expect(ConnectableObject.Signals).toEqual(jasmine.any(Object));
       if (_.isObject(ConnectableObject.Signals)) {
-        var expectedSignals = _.merge({
+        const expectedSignals = _.merge({
           connecting: "connecting",
           connectionFailed: "connectionFailed",
           connected: "connected",
@@ -52,55 +52,55 @@ describe("Unit Test - ConnectableObject", function () {
 
   describe("When instantiate", function () {
     it("When not using the new operator Then must return new instance", function () {
-      var value = ConnectableObject();
+      const value = ConnectableObject();
       expect(value).toEqual(jasmine.any(ConnectableObject));
     });
 
     it("When using the new operator must return new instance", function () {
-      var value = new ConnectableObject();
+      const value = new ConnectableObject();
       expect(value).toEqual(jasmine.any(ConnectableObject));
     });
 
     describe("When canInitialize", function () {
       it("Given state NotInitialized Then must return true", function () {
-        var connectableObject = new ConnectableObject();
-        connectableObject.properties.currentState = ConnectableObject.States.NotInitialized;
+        const instance = new ConnectableObject();
+        instance.properties.currentState = ConnectableObject.States.NotInitialized;
 
-        var response = connectableObject.canInitialize();
+        const response = instance.canInitialize();
         expect(response).toBeTruthy();
       });
 
       it("Given state other Than NotInitialized Then must return true", function () {
-        var connectableObject = new ConnectableObject();
-        connectableObject.properties.currentState = ConnectableObject.States.Ready;
+        const instance = new ConnectableObject();
+        instance.properties.currentState = ConnectableObject.States.Ready;
 
-        var response = connectableObject.canInitialize();
+        const response = instance.canInitialize();
         expect(response).toBeFalsy();
       });
     }); // end of canInitialize
 
     describe("When canFinalize", function () {
       it("Given state ready Then must return true", function () {
-        var connectableObject = new ConnectableObject();
-        connectableObject.properties.currentState = ConnectableObject.States.Ready;
+        const instance = new ConnectableObject();
+        instance.properties.currentState = ConnectableObject.States.Ready;
 
-        var response = connectableObject.canFinalize();
+        const response = instance.canFinalize();
         expect(response).toBeTruthy();
       });
+
       it("Given state Initialized Then must return true", function () {
-        var connectableObject = new ConnectableObject();
-        connectableObject.properties.currentState = ConnectableObject.States.Initialized;
+        const instance = new ConnectableObject();
+        instance.properties.currentState = ConnectableObject.States.Initialized;
 
-        var response = connectableObject.canFinalize();
+        const response = instance.canFinalize();
         expect(response).toBeTruthy();
       });
-
 
       it("Given state other Than ready or Initialized Then must return true", function () {
-        var connectableObject = new ConnectableObject();
-        connectableObject.properties.currentState = ConnectableObject.States.NotInitialized;
+        const instance = new ConnectableObject();
+        instance.properties.currentState = ConnectableObject.States.NotInitialized;
 
-        var response = connectableObject.canFinalize();
+        const response = instance.canFinalize();
         expect(response).toBeFalsy();
       });
     }); // end of canFinalize
@@ -108,352 +108,427 @@ describe("Unit Test - ConnectableObject", function () {
 
   describe("When canConnect", function () {
     it("Given state Initialized Then must return true", function () {
-      var connectableObject = new ConnectableObject();
-      connectableObject.properties.currentState = ConnectableObject.States.Initialized;
+      const instance = new ConnectableObject();
+      instance.properties.currentState = ConnectableObject.States.Initialized;
 
-      var response = connectableObject.canConnect();
+      const response = instance.canConnect();
       expect(response).toBeTruthy();
     });
 
     it("Given state Ready Then must return true", function () {
-      var connectableObject = new ConnectableObject();
-      connectableObject.properties.currentState = ConnectableObject.States.Ready;
+      const instance = new ConnectableObject();
+      instance.properties.currentState = ConnectableObject.States.Ready;
 
-      var response = connectableObject.canConnect();
+      const response = instance.canConnect();
       expect(response).toBeTruthy();
     });
 
     it("Given state other Than Ready or Initialized Then must return true", function () {
-      var connectableObject = new ConnectableObject();
-      connectableObject.properties.currentState = ConnectableObject.States.NotInitialized;
+      const instance = new ConnectableObject();
+      instance.properties.currentState = ConnectableObject.States.NotInitialized;
 
-      var response = connectableObject.canConnect();
+      const response = instance.canConnect();
       expect(response).toBeFalsy();
     });
   }); // end of canConnect
 
   describe("When canDisconnect", function () {
     it("Given state ready Then must return true", function () {
-      var connectableObject = new ConnectableObject();
-      connectableObject.properties.currentState = ConnectableObject.States.Ready;
+      const instance = new ConnectableObject();
+      instance.properties.currentState = ConnectableObject.States.Ready;
 
-      var response = connectableObject.canDisconnect();
+      const response = instance.canDisconnect();
       expect(response).toBeTruthy();
     });
 
     it("Given state other Than ready or Initialized Then must return true", function () {
-      var connectableObject = new ConnectableObject();
-      connectableObject.properties.currentState = ConnectableObject.States.NotInitialized;
+      const instance = new ConnectableObject();
+      instance.properties.currentState = ConnectableObject.States.NotInitialized;
 
-      var response = connectableObject.canDisconnect();
+      const response = instance.canDisconnect();
       expect(response).toBeFalsy();
     });
   }); // end of canDisconnect
 
   describe("When connect", function () {
     it("Then must call canConnect", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      spyOn(connectableObject, 'canConnect').and.callThrough();
-      connectableObject.connect(function () {
-        expect(connectableObject.canConnect).toHaveBeenCalled();
+      spyOn(instance, 'canConnect').and.callThrough();
+      const handleResult = () => {
+        expect(instance.canConnect).toHaveBeenCalled();
         testDone();
-      });
+      };
+      instance.connect().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given canConnect return false Then must return error", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      spyOn(connectableObject, 'canConnect').and.callFake(function () {
+      spyOn(instance, 'canConnect').and.callFake(function () {
         return false;
       });
-      connectableObject.connect(function (error) {
-        expect(connectableObject.canConnect).toHaveBeenCalled();
-        expect(error).toEqual(jasmine.any(IllegalStateException));
-        testDone();
-      });
+      instance.connect()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(error => {
+          expect(instance.canConnect).toHaveBeenCalled();
+          expect(error).toEqual(jasmine.any(IllegalStateException));
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must call _handleConnection", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      spyOn(connectableObject, 'canConnect').and.callFake(function () {
+      spyOn(instance, 'canConnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleConnection').and.callFake(function (callback) {
-        expect(callback).toEqual(jasmine.any(Function));
-        testDone();
+      spyOn(instance, '_handleConnection').and.callFake(function () {
+        return new Promise(() => {
+          expect(true).toBeTruthy();
+          testDone();
+        });
       });
-      connectableObject.connect(function () {
+      const handleResult = () => {
         expect(false).toBeTruthy();
         testDone();
-      });
+      };
+      instance.connect().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given _handleConnection returns error Then must return the error", function (testDone) {
-      var connectableObject = new ConnectableObject();
-      var expectedError = new Error("The error");
+      const instance = new ConnectableObject();
+      const expectedError = new Error("The error");
 
-      spyOn(connectableObject, 'canConnect').and.callFake(function () {
+      spyOn(instance, 'canConnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleConnection').and.callFake(function (callback) {
-        callback(expectedError);
+      spyOn(instance, '_handleConnection').and.callFake(() => {
+        return new Promise((resolve, reject) => {
+          reject(expectedError);
+        });
       });
-      connectableObject.connect(function (error) {
-        expect(error).toBe(expectedError);
-        testDone();
-      });
+      instance.connect()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(error => {
+          expect(error).toBe(expectedError);
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must change current state=Connecting before calling _handleConnection", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      var slotConnecting = jasmine.createSpy("onConnecting");
-      connectableObject.on('connecting', slotConnecting);
+      const slotConnecting = jasmine.createSpy("onConnecting");
+      instance.on('connecting', slotConnecting);
 
-      spyOn(connectableObject, 'canConnect').and.callFake(function () {
+      spyOn(instance, 'canConnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleConnection').and.callFake(function () {
-        expect(connectableObject.currentState).toEqual("Connecting");
+      spyOn(instance, '_handleConnection').and.callFake(function () {
+        expect(instance.currentState).toEqual("Connecting");
         expect(slotConnecting).toHaveBeenCalled();
-        testDone();
+        return new Promise(() => {
+          expect(true).toBeTruthy();
+          testDone();
+        });
       });
-      connectableObject.connect(function () {
+      const handleResult = () => {
         expect(false).toBeTruthy();
         testDone();
-      });
+      };
+      instance.connect().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleConnection returns error Then must emit connectionFailed and currentState=Initialized", function (testDone) {
-      var connectableObject = new ConnectableObject();
-      connectableObject.properties.currentState = "Initialized";
+      const instance = new ConnectableObject();
+      instance.properties.currentState = "Initialized";
 
-      var slotConnectionFailed = jasmine.createSpy("onConnectionFailed");
-      connectableObject.on('connectionFailed', slotConnectionFailed);
+      const slotConnectionFailed = jasmine.createSpy("onConnectionFailed");
+      instance.on('connectionFailed', slotConnectionFailed);
 
-      spyOn(connectableObject, 'canConnect').and.callFake(function () {
+      spyOn(instance, 'canConnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleConnection').and.callFake(function (callback) {
-        callback(new Error("The error"));
+      spyOn(instance, '_handleConnection').and.callFake(function () {
+        return new Promise((resolve, reject) => {
+          reject(new Error("The error"));
+        });
       });
-      connectableObject.connect(function () {
-        expect(connectableObject.currentState).toEqual("Initialized");
-        expect(slotConnectionFailed).toHaveBeenCalled();
-        testDone();
-      });
+      instance.connect()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(() => {
+          expect(instance.currentState).toEqual("Initialized");
+          expect(slotConnectionFailed).toHaveBeenCalled();
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleConnection returns ok Then must emit connected and currentState=Ready", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      var slotConnected = jasmine.createSpy("onConnectionSucceed");
-      connectableObject.on('connected', slotConnected);
+      const slotConnected = jasmine.createSpy("onConnectionSucceed");
+      instance.on('connected', slotConnected);
 
-      spyOn(connectableObject, 'canConnect').and.callFake(function () {
+      spyOn(instance, 'canConnect').and.callFake(function () {
         return true;
       });
-      connectableObject.connect(function () {
-        expect(connectableObject.currentState).toEqual("Ready");
-        expect(slotConnected).toHaveBeenCalled();
-        testDone();
-      });
+      instance.connect().then(() => {
+          expect(instance.currentState).toEqual("Ready");
+          expect(slotConnected).toHaveBeenCalled();
+          testDone();
+        })
+        .catch(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
   }); // End of connect
 
   describe("When disconnect", function () {
     it("Then must call canDisconnect", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      spyOn(connectableObject, 'canDisconnect').and.callThrough();
-      connectableObject.disconnect(function () {
-        expect(connectableObject.canDisconnect).toHaveBeenCalled();
+      spyOn(instance, 'canDisconnect').and.callThrough();
+      const handleResult = () => {
+        expect(instance.canDisconnect).toHaveBeenCalled();
         testDone();
-      });
+      };
+      instance.disconnect().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given canConnect return false Then must return error", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
+      spyOn(instance, 'canDisconnect').and.callFake(function () {
         return false;
       });
-      connectableObject.disconnect(function (error) {
-        expect(connectableObject.canDisconnect).toHaveBeenCalled();
-        expect(error).toEqual(jasmine.any(IllegalStateException));
-        testDone();
-      });
+      instance.disconnect()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(error => {
+          expect(instance.canDisconnect).toHaveBeenCalled();
+          expect(error).toEqual(jasmine.any(IllegalStateException));
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must call _handleDisconnection", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
+      spyOn(instance, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleDisconnection').and.callFake(function (callback) {
-        expect(callback).toEqual(jasmine.any(Function));
-        testDone();
+      spyOn(instance, '_handleDisconnection').and.callFake(function () {
+        return new Promise(() => {
+          testDone();
+        });
       });
-      connectableObject.disconnect(function () {
+      const handleResult = () => {
         expect(false).toBeTruthy();
         testDone();
-      });
+      };
+      instance.disconnect().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given _handleDisconnection returns error Then must return the error", function (testDone) {
-      var connectableObject = new ConnectableObject();
-      var expectedError = new Error("The error");
+      const instance = new ConnectableObject();
+      const expectedError = new Error("The error");
 
-      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
+      spyOn(instance, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleDisconnection').and.callFake(function (callback) {
-        callback(expectedError);
+      spyOn(instance, '_handleDisconnection').and.callFake(function () {
+        return new Promise((resolve, reject) => {
+          reject(expectedError);
+        })
       });
-      connectableObject.disconnect(function (error) {
-        expect(error).toBe(expectedError);
-        testDone();
-      });
+      instance.disconnect()
+        .then((() => {
+          expect(false).toBeTruthy();
+          testDone();
+        }))
+        .catch(error => {
+          expect(error).toBe(expectedError);
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must change current state=Disconnecting before calling _handleDisconnection", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      var slotDisconnecting = jasmine.createSpy("onDisconnecting");
-      connectableObject.on('disconnecting', slotDisconnecting);
+      const slotDisconnecting = jasmine.createSpy("onDisconnecting");
+      instance.on('disconnecting', slotDisconnecting);
 
-      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
+      spyOn(instance, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleDisconnection').and.callFake(function () {
-        expect(connectableObject.currentState).toEqual("Disconnecting");
+      spyOn(instance, '_handleDisconnection').and.callFake(function () {
+        expect(instance.currentState).toEqual("Disconnecting");
         expect(slotDisconnecting).toHaveBeenCalled();
-        testDone();
+        return new Promise(() => testDone());
       });
-      connectableObject.disconnect(function () {
+      const handleResult = () => {
         expect(false).toBeTruthy();
         testDone();
-      });
+      };
+      instance.disconnect().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleDisconnection returns error Then must emit connectionFailed and currentState=Initialized", function (testDone) {
-      var connectableObject = new ConnectableObject();
-      connectableObject.properties.currentState = "Ready";
+      const instance = new ConnectableObject();
+      instance.properties.currentState = "Ready";
 
-      var slotDisconnectionFailed = jasmine.createSpy("onDisconnectionFailed");
-      connectableObject.on('disconnectionFailed', slotDisconnectionFailed);
+      const slotDisconnectionFailed = jasmine.createSpy("onDisconnectionFailed");
+      instance.on('disconnectionFailed', slotDisconnectionFailed);
 
-      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
+      spyOn(instance, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleDisconnection').and.callFake(function (callback) {
-        callback(new Error("The error"));
+      spyOn(instance, '_handleDisconnection').and.callFake(function () {
+        return new Promise((resolve, reject) => reject(new Error("The error")));
       });
-      connectableObject.disconnect(function () {
-        expect(connectableObject.currentState).toEqual("Ready");
-        expect(slotDisconnectionFailed).toHaveBeenCalled();
-        testDone();
-      });
+      instance.disconnect()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(() => {
+          expect(instance.currentState).toEqual("Ready");
+          expect(slotDisconnectionFailed).toHaveBeenCalled();
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleDisconnection returns ok Then must emit connected and currentState=Initialized", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      var slotDisconnected = jasmine.createSpy("onDisconnected");
-      connectableObject.on('disconnected', slotDisconnected);
+      const slotDisconnected = jasmine.createSpy("onDisconnected");
+      instance.on('disconnected', slotDisconnected);
 
-      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
+      spyOn(instance, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      connectableObject.disconnect(function () {
-        expect(connectableObject.currentState).toEqual("Initialized");
-        expect(slotDisconnected).toHaveBeenCalled();
-        testDone();
-      });
+      instance.disconnect()
+        .then(() => {
+          expect(instance.currentState).toEqual("Initialized");
+          expect(slotDisconnected).toHaveBeenCalled();
+          testDone();
+        })
+        .catch(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
   }); // End of connect
 
   describe("When _handleFinalization", function () {
     it("Given state Ready Then must call disconnect", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      spyOn(connectableObject, 'isReady').and.callFake(function () {
+      spyOn(instance, 'isReady').and.callFake(function () {
         return true;
       });
 
-      spyOn(connectableObject, 'disconnect').and.callFake(function (callback) {
-        expect(callback).toEqual(jasmine.any(Function));
-        testDone();
+      spyOn(instance, 'disconnect').and.callFake(function () {
+        return new Promise(() => {
+          expect(true).toBeTruthy();
+          testDone();
+        });
       });
 
-      connectableObject._handleFinalization(undefined, function () {
+      const handleResult = () => {
         expect(false).toBeTruthy();
         testDone();
-      });
+      };
+      instance._handleFinalization().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given state Ready and disconnect returns error Then must return error", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      spyOn(connectableObject, 'isReady').and.callFake(function () {
+      spyOn(instance, 'isReady').and.callFake(function () {
         return true;
       });
 
-      spyOn(connectableObject, 'disconnect').and.callFake(function (callback) {
-        callback(new Error("The error"));
+      spyOn(instance, 'disconnect').and.callFake(function () {
+        return new Promise((resolve, reject) => reject(new Error("The error")));
       });
 
-      connectableObject._handleFinalization(undefined, function (error) {
-        expect(error).toEqual(jasmine.any(Error));
-        testDone();
-      });
+      instance._handleFinalization()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch((error) => {
+          expect(error).toEqual(jasmine.any(Error));
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
   }); // End of _handleFinalization
 
   describe("When _onConnectionLost", function () {
     it("Then must emit connectionLost", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      connectableObject.on('connectionLost', function () {
+      instance.on('connectionLost', function () {
         expect(true).toBeTruthy();
         testDone();
       });
 
-      connectableObject._onConnectionLost();
+      instance._onConnectionLost();
     }, DEFAULT_TIMEOUT);
 
     it("Then current state must be Initialized", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      connectableObject._onConnectionLost(function () {
-        expect(connectableObject.currentState).toEqual('Initialized');
-        testDone();
-      });
+      instance._onConnectionLost()
+        .then(() => {
+          expect(instance.currentState).toEqual('Initialized');
+          testDone();
+        })
+        .catch(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
     }, DEFAULT_TIMEOUT);
   }); // End of _onConnectionLost
 
   describe("When _onReconnected", function () {
     it("Then must emit connectionLost", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      connectableObject.on('reconnected', function () {
+      instance.on('reconnected', function () {
         expect(true).toBeTruthy();
         testDone();
       });
 
-      connectableObject._onReconnected();
+      instance._onReconnected();
     }, DEFAULT_TIMEOUT);
 
     it("Then current state must be Ready", function (testDone) {
-      var connectableObject = new ConnectableObject();
+      const instance = new ConnectableObject();
 
-      connectableObject._onReconnected(function () {
-        expect(connectableObject.currentState).toEqual('Ready');
-        testDone();
-      });
+      instance._onReconnected()
+        .then(() => {
+          expect(instance.currentState).toEqual('Ready');
+          testDone();
+        })
+        .catch(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
   }); // End of _onConnectionLost
 });
