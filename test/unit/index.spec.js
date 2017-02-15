@@ -18,6 +18,7 @@ describe("Unit Test - index.js", function () {
             'InitializableObject',
             'BaseObject',
             'ConnectableObject',
+            'LoadableObject',
             'ProxyLogger',
             'exceptions'
         ];

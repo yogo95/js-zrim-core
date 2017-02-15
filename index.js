@@ -21,6 +21,7 @@ function requireSubModule() {
 requireSubModule.BaseObject = require("./lib/BaseObject");
 requireSubModule.InitializableObject = require("./lib/InitializableObject");
 requireSubModule.ConnectableObject = require("./lib/ConnectableObject");
+requireSubModule.LoadableObject = require("./lib/LoadableObject");
 requireSubModule.ProxyLogger = require("./lib/ProxyLogger");
 
 // Contains exceptions
