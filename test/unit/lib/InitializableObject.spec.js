@@ -2,14 +2,14 @@
  * Unit test for InitializableObject
  */
 
-var InitializableObject = require("../../../lib/InitializableObject");
+const InitializableObject = require("../../../lib/InitializableObject");
 
-var _ = require('lodash'),
+const _ = require('lodash'),
   BaseObject = require('../../../lib/BaseObject'),
   IllegalStateException = require("../../../lib/exceptions/IllegalStateException")
   ;
 
-var DEFAULT_TIMEOUT = 2000;
+const DEFAULT_TIMEOUT = 2000;
 
 describe("Unit Test - InitializableObject", function () {
 
@@ -22,7 +22,7 @@ describe("Unit Test - InitializableObject", function () {
     it("Must have the expected States", function () {
       expect(InitializableObject.States).toEqual(jasmine.any(Object));
       if (_.isObject(InitializableObject.States)) {
-        var expectedStates = _.merge({
+        const expectedStates = _.merge({
           NotInitialized: "NotInitialized",
           Initializing: "Initializing",
           Initialized: "Initialized",
@@ -36,7 +36,7 @@ describe("Unit Test - InitializableObject", function () {
     it("Must have the expected Signals", function () {
       expect(InitializableObject.Signals).toEqual(jasmine.any(Object));
       if (_.isObject(InitializableObject.Signals)) {
-        var expectedSignals = _.merge({
+        const expectedSignals = _.merge({
           initializing: "initializing",
           initializationSucceed: "initializationSucceed",
           initializationFailed: "initializationFailed",
@@ -52,12 +52,12 @@ describe("Unit Test - InitializableObject", function () {
 
   describe("When instantiate", function () {
     it("When not using the new operator Then must return new instance", function () {
-      var value = InitializableObject();
+      const value = InitializableObject();
       expect(value).toEqual(jasmine.any(InitializableObject));
     });
 
     it("When using the new operator must return new instance", function () {
-      var value = new InitializableObject();
+      const value = new InitializableObject();
       expect(value).toEqual(jasmine.any(InitializableObject));
     });
   }); // End of When instantiate
@@ -66,44 +66,44 @@ describe("Unit Test - InitializableObject", function () {
 
     describe("When canInitialize", function () {
       it("Given state NotInitialized Then must return true", function () {
-        var initializableObject = new InitializableObject();
+        const initializableObject = new InitializableObject();
         initializableObject.properties.currentState = InitializableObject.States.NotInitialized;
 
-        var response = initializableObject.canInitialize();
+        const response = initializableObject.canInitialize();
         expect(response).toBeTruthy();
       });
 
       it("Given state other Than NotInitialized Then must return true", function () {
-        var initializableObject = new InitializableObject();
+        const initializableObject = new InitializableObject();
         initializableObject.properties.currentState = InitializableObject.States.Ready;
 
-        var response = initializableObject.canInitialize();
+        const response = initializableObject.canInitialize();
         expect(response).toBeFalsy();
       });
     }); // end of canInitialize
 
     describe("When canFinalize", function () {
       it("Given state ready Then must return true", function () {
-        var initializableObject = new InitializableObject();
+        const initializableObject = new InitializableObject();
         initializableObject.properties.currentState = InitializableObject.States.Ready;
 
-        var response = initializableObject.canFinalize();
+        const response = initializableObject.canFinalize();
         expect(response).toBeTruthy();
       });
       it("Given state Initialized Then must return true", function () {
-        var initializableObject = new InitializableObject();
+        const initializableObject = new InitializableObject();
         initializableObject.properties.currentState = InitializableObject.States.Initialized;
 
-        var response = initializableObject.canFinalize();
+        const response = initializableObject.canFinalize();
         expect(response).toBeTruthy();
       });
 
 
       it("Given state other Than ready or Initialized Then must return true", function () {
-        var initializableObject = new InitializableObject();
+        const initializableObject = new InitializableObject();
         initializableObject.properties.currentState = InitializableObject.States.NotInitialized;
 
-        var response = initializableObject.canFinalize();
+        const response = initializableObject.canFinalize();
         expect(response).toBeFalsy();
       });
     }); // end of canFinalize
@@ -111,21 +111,38 @@ describe("Unit Test - InitializableObject", function () {
 
   describe("When initialize", function () {
     it("Then must call canInitialize", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
       spyOn(initializableObject, 'canInitialize').and.callThrough();
-      initializableObject.initialize(undefined, function () {
-        expect(initializableObject.canInitialize).toHaveBeenCalled();
-        testDone();
-      });
+      initializableObject.initialize()
+        .then(() => {
+          expect(initializableObject.canInitialize).toHaveBeenCalled();
+          testDone();
+        })
+        .catch(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given canInitialize return false Then must return error", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
       spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return false;
       });
+      initializableObject.initialize()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch((error) => {
+          expect(initializableObject.canInitialize).toHaveBeenCalled();
+          expect(error).toEqual(jasmine.any(IllegalStateException));
+          testDone();
+          testDone();
+        });
+
       initializableObject.initialize(undefined, function (error) {
         expect(initializableObject.canInitialize).toHaveBeenCalled();
         expect(error).toEqual(jasmine.any(IllegalStateException));
@@ -134,8 +151,8 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must call _handleInitialization", function (testDone) {
-      var initializableObject = new InitializableObject();
-      var optionsIn = {
+      const initializableObject = new InitializableObject();
+      const optionsIn = {
         a: '',
         b: 12
       };
@@ -143,37 +160,42 @@ describe("Unit Test - InitializableObject", function () {
       spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options, callback) {
+      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options) {
         expect(options).toEqual(optionsIn);
-        expect(callback).toEqual(jasmine.any(Function));
-        testDone();
+        return new Promise(() => {
+          testDone();
+        });
       });
-      initializableObject.initialize(_.cloneDeep(optionsIn), function () {
-        expect(false).toBeTruthy();
-        testDone();
-      });
+      initializableObject.initialize(_.cloneDeep(optionsIn));
     }, DEFAULT_TIMEOUT);
 
     it("Given _handleInitialization returns error Then must return the error", function (testDone) {
-      var initializableObject = new InitializableObject();
-      var expectedError = new Error("The error");
+      const initializableObject = new InitializableObject();
+      const expectedError = new Error("The error");
 
       spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options, callback) {
-        callback(expectedError);
+      spyOn(initializableObject, '_handleInitialization').and.callFake(function () {
+        return new Promise((resolve, reject) => {
+          reject(expectedError);
+        });
       });
-      initializableObject.initialize(undefined, function (error) {
-        expect(error).toBe(expectedError);
-        testDone();
-      });
+      initializableObject.initialize()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(error => {
+          expect(error).toBe(expectedError);
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must change current state=Initializing before calling _handleInitialization", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
-      var slotInitializing = jasmine.createSpy("onInitializing");
+      const slotInitializing = jasmine.createSpy("onInitializing");
       initializableObject.on('initializing', slotInitializing);
 
       spyOn(initializableObject, 'canInitialize').and.callFake(function () {
@@ -182,46 +204,51 @@ describe("Unit Test - InitializableObject", function () {
       spyOn(initializableObject, '_handleInitialization').and.callFake(function () {
         expect(initializableObject.currentState).toEqual("Initializing");
         expect(slotInitializing).toHaveBeenCalled();
-        testDone();
+        return new Promise(() => {
+          testDone();
+        });
       });
-      initializableObject.initialize(undefined, function () {
-        expect(false).toBeTruthy();
-        testDone();
-      });
+      initializableObject.initialize();
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleInitialization returns error Then must emit initializationFailed and currentState=NotInitialized", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
-      var slotInitializationFailed = jasmine.createSpy("onInitializationFailed");
+      const slotInitializationFailed = jasmine.createSpy("onInitializationFailed");
       initializableObject.on('initializationFailed', slotInitializationFailed);
 
       spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options, callback) {
-        callback(new Error("The error"));
+      spyOn(initializableObject, '_handleInitialization').and.callFake(function () {
+        return new Promise((resolve, reject) => {
+          reject(new Error("The error"));
+        });
       });
-      initializableObject.initialize(undefined, function () {
+
+      let checkResult = () => {
         expect(initializableObject.currentState).toEqual("NotInitialized");
         expect(slotInitializationFailed).toHaveBeenCalled();
         testDone();
-      });
+      };
+      initializableObject.initialize().then(checkResult).catch(checkResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleInitialization returns ok Then must emit initializationSucceed and currentState=Initialized", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
-      var slotInitializationSucceed = jasmine.createSpy("onInitializationSucceed");
+      const slotInitializationSucceed = jasmine.createSpy("onInitializationSucceed");
       initializableObject.on('initializationSucceed', slotInitializationSucceed);
 
       spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options, callback) {
-        callback();
+      spyOn(initializableObject, '_handleInitialization').and.callFake(() => {
+        return new Promise(resolve => resolve());
       });
-      initializableObject.initialize(undefined, function () {
+
+
+      initializableObject.initialize().then(() => {
         expect(initializableObject.currentState).toEqual("Initialized");
         expect(slotInitializationSucceed).toHaveBeenCalled();
         testDone();
@@ -231,53 +258,57 @@ describe("Unit Test - InitializableObject", function () {
 
   describe("When init", function () {
     it("Then must call initialize", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
-      var args = [
-        {a: ''},
-        function () {
-
-        }
+      const args = [
+        {a: ''}
       ];
 
       spyOn(initializableObject, 'initialize').and.callFake(function () {
-        expect(arguments.length).toEqual(2);
-        expect(arguments[0]).toEqual(args[0]);
-        expect(arguments[1]).toEqual(args[1]);
-        testDone();
+        return new Promise(() => {
+          expect(arguments.length).toEqual(1);
+          expect(arguments[0]).toEqual(args[0]);
+          testDone();
+        });
       });
 
-      initializableObject.init.apply(initializableObject, args);
+      expect(initializableObject.init({a: ''})).toEqual(jasmine.any(Promise));
     }, DEFAULT_TIMEOUT);
   }); // End of when init
 
   describe("When finalize", function () {
     it("Then must call canFinalize", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
       spyOn(initializableObject, 'canFinalize').and.callThrough();
-      initializableObject.finalize(undefined, function () {
+      const handleResult = () => {
         expect(initializableObject.canFinalize).toHaveBeenCalled();
         testDone();
-      });
+      };
+      initializableObject.finalize().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given canFinalize return false Then must return error", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
       spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return false;
       });
-      initializableObject.finalize(undefined, function (error) {
-        expect(initializableObject.canFinalize).toHaveBeenCalled();
-        expect(error).toEqual(jasmine.any(IllegalStateException));
-        testDone();
-      });
+      initializableObject.finalize()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(error => {
+          expect(initializableObject.canFinalize).toHaveBeenCalled();
+          expect(error).toEqual(jasmine.any(IllegalStateException));
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must call _handleFinalization", function (testDone) {
-      var initializableObject = new InitializableObject();
-      var optionsIn = {
+      const initializableObject = new InitializableObject();
+      const optionsIn = {
         a: '',
         b: 12
       };
@@ -285,90 +316,108 @@ describe("Unit Test - InitializableObject", function () {
       spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options, callback) {
+      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options) {
         expect(options).toEqual(optionsIn);
-        expect(callback).toEqual(jasmine.any(Function));
-        testDone();
+        return new Promise(() => {
+          testDone();
+        });
       });
-      initializableObject.finalize(_.cloneDeep(optionsIn), function () {
+      const handleResult = () => {
         expect(false).toBeTruthy();
         testDone();
-      });
+      };
+      initializableObject.finalize(_.cloneDeep(optionsIn)).then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given _handleFinalization returns error Then must return the error", function (testDone) {
-      var initializableObject = new InitializableObject();
-      var expectedError = new Error("The error");
+      const initializableObject = new InitializableObject();
+      const expectedError = new Error("The error");
 
       spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options, callback) {
-        callback(expectedError);
+      spyOn(initializableObject, '_handleFinalization').and.callFake(() => {
+        return new Promise((resolve, reject) => reject(expectedError));
       });
-      initializableObject.finalize(undefined, function (error) {
-        expect(error).toBe(expectedError);
-        testDone();
-      });
+      initializableObject.finalize()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(error => {
+          expect(error).toBe(expectedError);
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must change current state=Finalizing before calling _handleFinalization", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
-      var slotFinalizing = jasmine.createSpy("onFinalizing");
+      const slotFinalizing = jasmine.createSpy("onFinalizing");
       initializableObject.on('finalizing', slotFinalizing);
 
       spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').and.callFake(function () {
+      spyOn(initializableObject, '_handleFinalization').and.callFake(() => {
         expect(initializableObject.currentState).toEqual("Finalizing");
         expect(slotFinalizing).toHaveBeenCalled();
-        testDone();
+        return new Promise(() => testDone());
       });
-      initializableObject.finalize(undefined, function () {
+      let handleResult = () => {
         expect(false).toBeTruthy();
         testDone();
-      });
+      };
+      initializableObject.finalize().then(handleResult).catch(handleResult);
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleFinalization returns error Then must emit finalizationFailed and currentState=Initialized", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
       initializableObject.properties.currentState = 'Initialized';
 
-      var slotFinalizationFailed = jasmine.createSpy("onFinalizationFailed");
+      const slotFinalizationFailed = jasmine.createSpy("onFinalizationFailed");
       initializableObject.on('finalizationFailed', slotFinalizationFailed);
 
       spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options, callback) {
-        callback(new Error("The error"));
+      spyOn(initializableObject, '_handleFinalization').and.callFake(() => {
+        return new Promise((resolve, reject) => reject(new Error("The error")));
       });
-      initializableObject.finalize(undefined, function () {
-        expect(initializableObject.currentState).toEqual("Initialized");
-        expect(slotFinalizationFailed).toHaveBeenCalled();
-        testDone();
-      });
+      initializableObject.finalize()
+        .then(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        })
+        .catch(() => {
+          expect(initializableObject.currentState).toEqual("Initialized");
+          expect(slotFinalizationFailed).toHaveBeenCalled();
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleFinalization returns ok Then must emit finalizationSucceed and currentState=NotInitialized", function (testDone) {
-      var initializableObject = new InitializableObject();
+      const initializableObject = new InitializableObject();
 
-      var slotFinalizationSucceed = jasmine.createSpy("onFinalizationSucceed");
+      const slotFinalizationSucceed = jasmine.createSpy("onFinalizationSucceed");
       initializableObject.on('finalizationSucceed', slotFinalizationSucceed);
 
       spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options, callback) {
-        callback();
+      spyOn(initializableObject, '_handleFinalization').and.callFake(() => {
+        return new Promise(resolve => resolve());
       });
-      initializableObject.finalize(function () {
-        expect(initializableObject.currentState).toEqual("NotInitialized");
-        expect(slotFinalizationSucceed).toHaveBeenCalled();
-        testDone();
-      });
+      initializableObject.finalize()
+        .then(() => {
+          expect(initializableObject.currentState).toEqual("NotInitialized");
+          expect(slotFinalizationSucceed).toHaveBeenCalled();
+          testDone();
+        })
+        .catch(() => {
+          expect(false).toBeTruthy();
+          testDone();
+        });
     }, DEFAULT_TIMEOUT);
   }); // End of finalize
 });
