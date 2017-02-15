@@ -154,7 +154,7 @@ describe("Unit Test - ConnectableObject", function () {
     it("Then must call canConnect", function (testDone) {
       var connectableObject = new ConnectableObject();
 
-      spyOn(connectableObject, 'canConnect').andCallThrough();
+      spyOn(connectableObject, 'canConnect').and.callThrough();
       connectableObject.connect(function () {
         expect(connectableObject.canConnect).toHaveBeenCalled();
         testDone();
@@ -164,7 +164,7 @@ describe("Unit Test - ConnectableObject", function () {
     it("Given canConnect return false Then must return error", function (testDone) {
       var connectableObject = new ConnectableObject();
 
-      spyOn(connectableObject, 'canConnect').andCallFake(function () {
+      spyOn(connectableObject, 'canConnect').and.callFake(function () {
         return false;
       });
       connectableObject.connect(function (error) {
@@ -177,10 +177,10 @@ describe("Unit Test - ConnectableObject", function () {
     it("Given valid state Then must call _handleConnection", function (testDone) {
       var connectableObject = new ConnectableObject();
 
-      spyOn(connectableObject, 'canConnect').andCallFake(function () {
+      spyOn(connectableObject, 'canConnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleConnection').andCallFake(function (callback) {
+      spyOn(connectableObject, '_handleConnection').and.callFake(function (callback) {
         expect(callback).toEqual(jasmine.any(Function));
         testDone();
       });
@@ -194,10 +194,10 @@ describe("Unit Test - ConnectableObject", function () {
       var connectableObject = new ConnectableObject();
       var expectedError = new Error("The error");
 
-      spyOn(connectableObject, 'canConnect').andCallFake(function () {
+      spyOn(connectableObject, 'canConnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleConnection').andCallFake(function (callback) {
+      spyOn(connectableObject, '_handleConnection').and.callFake(function (callback) {
         callback(expectedError);
       });
       connectableObject.connect(function (error) {
@@ -212,10 +212,10 @@ describe("Unit Test - ConnectableObject", function () {
       var slotConnecting = jasmine.createSpy("onConnecting");
       connectableObject.on('connecting', slotConnecting);
 
-      spyOn(connectableObject, 'canConnect').andCallFake(function () {
+      spyOn(connectableObject, 'canConnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleConnection').andCallFake(function () {
+      spyOn(connectableObject, '_handleConnection').and.callFake(function () {
         expect(connectableObject.currentState).toEqual("Connecting");
         expect(slotConnecting).toHaveBeenCalled();
         testDone();
@@ -233,10 +233,10 @@ describe("Unit Test - ConnectableObject", function () {
       var slotConnectionFailed = jasmine.createSpy("onConnectionFailed");
       connectableObject.on('connectionFailed', slotConnectionFailed);
 
-      spyOn(connectableObject, 'canConnect').andCallFake(function () {
+      spyOn(connectableObject, 'canConnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleConnection').andCallFake(function (callback) {
+      spyOn(connectableObject, '_handleConnection').and.callFake(function (callback) {
         callback(new Error("The error"));
       });
       connectableObject.connect(function () {
@@ -252,7 +252,7 @@ describe("Unit Test - ConnectableObject", function () {
       var slotConnected = jasmine.createSpy("onConnectionSucceed");
       connectableObject.on('connected', slotConnected);
 
-      spyOn(connectableObject, 'canConnect').andCallFake(function () {
+      spyOn(connectableObject, 'canConnect').and.callFake(function () {
         return true;
       });
       connectableObject.connect(function () {
@@ -267,7 +267,7 @@ describe("Unit Test - ConnectableObject", function () {
     it("Then must call canDisconnect", function (testDone) {
       var connectableObject = new ConnectableObject();
 
-      spyOn(connectableObject, 'canDisconnect').andCallThrough();
+      spyOn(connectableObject, 'canDisconnect').and.callThrough();
       connectableObject.disconnect(function () {
         expect(connectableObject.canDisconnect).toHaveBeenCalled();
         testDone();
@@ -277,7 +277,7 @@ describe("Unit Test - ConnectableObject", function () {
     it("Given canConnect return false Then must return error", function (testDone) {
       var connectableObject = new ConnectableObject();
 
-      spyOn(connectableObject, 'canDisconnect').andCallFake(function () {
+      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
         return false;
       });
       connectableObject.disconnect(function (error) {
@@ -290,10 +290,10 @@ describe("Unit Test - ConnectableObject", function () {
     it("Given valid state Then must call _handleDisconnection", function (testDone) {
       var connectableObject = new ConnectableObject();
 
-      spyOn(connectableObject, 'canDisconnect').andCallFake(function () {
+      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleDisconnection').andCallFake(function (callback) {
+      spyOn(connectableObject, '_handleDisconnection').and.callFake(function (callback) {
         expect(callback).toEqual(jasmine.any(Function));
         testDone();
       });
@@ -307,10 +307,10 @@ describe("Unit Test - ConnectableObject", function () {
       var connectableObject = new ConnectableObject();
       var expectedError = new Error("The error");
 
-      spyOn(connectableObject, 'canDisconnect').andCallFake(function () {
+      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleDisconnection').andCallFake(function (callback) {
+      spyOn(connectableObject, '_handleDisconnection').and.callFake(function (callback) {
         callback(expectedError);
       });
       connectableObject.disconnect(function (error) {
@@ -325,10 +325,10 @@ describe("Unit Test - ConnectableObject", function () {
       var slotDisconnecting = jasmine.createSpy("onDisconnecting");
       connectableObject.on('disconnecting', slotDisconnecting);
 
-      spyOn(connectableObject, 'canDisconnect').andCallFake(function () {
+      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleDisconnection').andCallFake(function () {
+      spyOn(connectableObject, '_handleDisconnection').and.callFake(function () {
         expect(connectableObject.currentState).toEqual("Disconnecting");
         expect(slotDisconnecting).toHaveBeenCalled();
         testDone();
@@ -346,10 +346,10 @@ describe("Unit Test - ConnectableObject", function () {
       var slotDisconnectionFailed = jasmine.createSpy("onDisconnectionFailed");
       connectableObject.on('disconnectionFailed', slotDisconnectionFailed);
 
-      spyOn(connectableObject, 'canDisconnect').andCallFake(function () {
+      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
         return true;
       });
-      spyOn(connectableObject, '_handleDisconnection').andCallFake(function (callback) {
+      spyOn(connectableObject, '_handleDisconnection').and.callFake(function (callback) {
         callback(new Error("The error"));
       });
       connectableObject.disconnect(function () {
@@ -365,7 +365,7 @@ describe("Unit Test - ConnectableObject", function () {
       var slotDisconnected = jasmine.createSpy("onDisconnected");
       connectableObject.on('disconnected', slotDisconnected);
 
-      spyOn(connectableObject, 'canDisconnect').andCallFake(function () {
+      spyOn(connectableObject, 'canDisconnect').and.callFake(function () {
         return true;
       });
       connectableObject.disconnect(function () {
@@ -380,11 +380,11 @@ describe("Unit Test - ConnectableObject", function () {
     it("Given state Ready Then must call disconnect", function (testDone) {
       var connectableObject = new ConnectableObject();
 
-      spyOn(connectableObject, 'isReady').andCallFake(function () {
+      spyOn(connectableObject, 'isReady').and.callFake(function () {
         return true;
       });
 
-      spyOn(connectableObject, 'disconnect').andCallFake(function (callback) {
+      spyOn(connectableObject, 'disconnect').and.callFake(function (callback) {
         expect(callback).toEqual(jasmine.any(Function));
         testDone();
       });
@@ -398,11 +398,11 @@ describe("Unit Test - ConnectableObject", function () {
     it("Given state Ready and disconnect returns error Then must return error", function (testDone) {
       var connectableObject = new ConnectableObject();
 
-      spyOn(connectableObject, 'isReady').andCallFake(function () {
+      spyOn(connectableObject, 'isReady').and.callFake(function () {
         return true;
       });
 
-      spyOn(connectableObject, 'disconnect').andCallFake(function (callback) {
+      spyOn(connectableObject, 'disconnect').and.callFake(function (callback) {
         callback(new Error("The error"));
       });
 

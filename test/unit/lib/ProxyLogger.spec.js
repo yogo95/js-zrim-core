@@ -29,7 +29,7 @@ describe("Unit Test - ProxyLogger", function () {
     it("Then must have logs function", function () {
       var value = new ProxyLogger();
 
-      _.each(['debug', 'info', 'warn', 'error', 'critical', 'fatal'], function (levelName) {
+      _.each(['error', 'warn', 'warn', 'info', 'verbose', 'debug', 'silly'], function (levelName) {
         expect(value[levelName]).toEqual(jasmine.any(Function));
       });
     });
@@ -90,7 +90,7 @@ describe("Unit Test - ProxyLogger", function () {
       var fakeTarget = jasmine.createSpy("FakeTarget");
       value.properties.target = targetObject;
       targetObject.getRootTarget = jasmine.createSpy("getRootTarget");
-      targetObject.getRootTarget.andCallFake(function () {
+      targetObject.getRootTarget.and.callFake(function () {
         return fakeTarget;
       });
       expect(value.getRootTarget()).toEqual(fakeTarget);
@@ -108,7 +108,7 @@ describe("Unit Test - ProxyLogger", function () {
 
     it("Given target undefined Then must return false", function () {
       var value = new ProxyLogger();
-      value.getRootTarget = jasmine.createSpy("getRootTarget").andCallFake(function () {
+      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return undefined;
       });
       expect(value.isDebugEnabled()).toBeFalsy();
@@ -116,7 +116,7 @@ describe("Unit Test - ProxyLogger", function () {
 
     it("Given target defined and debug mode Then must return false", function () {
       var value = new ProxyLogger();
-      value.getRootTarget = jasmine.createSpy("getRootTarget").andCallFake(function () {
+      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return {
           level: 'debug'
         };
@@ -209,7 +209,7 @@ describe("Unit Test - ProxyLogger", function () {
       var targetMock = {
         log: jasmine.createSpy("log")
       };
-      value.getRootTarget = jasmine.createSpy("getRootTarget").andCallFake(function () {
+      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return targetMock;
       });
 
@@ -228,7 +228,7 @@ describe("Unit Test - ProxyLogger", function () {
       var targetMock = {
         log: jasmine.createSpy("log")
       };
-      value.getRootTarget = jasmine.createSpy("getRootTarget").andCallFake(function () {
+      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return targetMock;
       });
 
@@ -250,7 +250,7 @@ describe("Unit Test - ProxyLogger", function () {
         log: jasmine.createSpy("log"),
         debug: jasmine.createSpy("debug")
       };
-      value.getRootTarget = jasmine.createSpy("getRootTarget").andCallFake(function () {
+      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return targetMock;
       });
 
@@ -312,4 +312,64 @@ describe("Unit Test - ProxyLogger", function () {
       expect(proxyFromOfFunction.properties.prefixes).toEqual(["a", "anonymous"]);
     });
   }); // End of When of
+
+  describe("When defineLogLevel", function () {
+    it("Given valid name and not exist Then must define log function", function () {
+      expect(ProxyLogger.prototype.testMe).not.toBeDefined();
+      ProxyLogger.defineLogLevel("testMe");
+      expect(ProxyLogger.prototype.testMe).toEqual(jasmine.any(Function));
+      expect(ProxyLogger.levelNamesKnown.testMe).toBeTruthy();
+      ProxyLogger.unDefineLogLevel("testMe");
+    });
+
+    it("Given valid name and not exists Then when call function must call log with level name", function (testDone) {
+      expect(ProxyLogger.prototype.testMe).not.toBeDefined();
+      ProxyLogger.defineLogLevel("testMe");
+
+      var instance = new ProxyLogger();
+      instance.log = jasmine.createSpy().and.callFake(function (levelName) {
+        expect(levelName).toEqual("testMe");
+        expect(arguments.length).toEqual(2);
+        expect(arguments[1]).toEqual("a");
+        ProxyLogger.unDefineLogLevel("testMe");
+        testDone();
+      });
+      instance.testMe("a");
+    });
+  }); // End of defineLogLevel
+
+  describe("When defineLogLevelAlias", function () {
+    it("Given valid name and not exist Then must define log function", function () {
+      expect(ProxyLogger.prototype.testMe).not.toBeDefined();
+      ProxyLogger.defineLogLevelAlias("debug", "testMe");
+      expect(ProxyLogger.prototype.testMe).toEqual(jasmine.any(Function));
+      expect(ProxyLogger.levelNamesKnown.testMe).toBeTruthy();
+      ProxyLogger.unDefineLogLevel("testMe");
+    });
+
+    it("Given valid name and not exists Then when call function must call log with level name and not alias", function (testDone) {
+      expect(ProxyLogger.prototype.testMe).not.toBeDefined();
+      ProxyLogger.defineLogLevelAlias("debug", "testMe");
+
+      var instance = new ProxyLogger();
+      instance.log = jasmine.createSpy().and.callFake(function (levelName) {
+        expect(levelName).toEqual("debug");
+        expect(arguments.length).toEqual(2);
+        expect(arguments[1]).toEqual("a");
+        ProxyLogger.unDefineLogLevel("testMe");
+        testDone();
+      });
+      instance.testMe("a");
+    });
+  }); // End of When defineLogLevelAlias
+
+  describe("When defineSysLogLevels", function () {
+    it("Then must define sys log levels", function () {
+      ProxyLogger.defineSysLogLevels();
+      _.each(['emerg', 'alert', 'crit', 'error', 'warning', 'notice', 'info', 'debug', 'warn', 'silly'], function (levelName) {
+        expect(ProxyLogger.prototype[levelName]).toEqual(jasmine.any(Function));
+        expect(ProxyLogger.levelNamesKnown[levelName]).toBeTruthy();
+      });
+    });
+  }); // End of defineSysLogLevels
 });

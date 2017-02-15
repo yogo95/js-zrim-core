@@ -113,7 +113,7 @@ describe("Unit Test - InitializableObject", function () {
     it("Then must call canInitialize", function (testDone) {
       var initializableObject = new InitializableObject();
 
-      spyOn(initializableObject, 'canInitialize').andCallThrough();
+      spyOn(initializableObject, 'canInitialize').and.callThrough();
       initializableObject.initialize(undefined, function () {
         expect(initializableObject.canInitialize).toHaveBeenCalled();
         testDone();
@@ -123,7 +123,7 @@ describe("Unit Test - InitializableObject", function () {
     it("Given canInitialize return false Then must return error", function (testDone) {
       var initializableObject = new InitializableObject();
 
-      spyOn(initializableObject, 'canInitialize').andCallFake(function () {
+      spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return false;
       });
       initializableObject.initialize(undefined, function (error) {
@@ -140,10 +140,10 @@ describe("Unit Test - InitializableObject", function () {
         b: 12
       };
 
-      spyOn(initializableObject, 'canInitialize').andCallFake(function () {
+      spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').andCallFake(function (options, callback) {
+      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options, callback) {
         expect(options).toEqual(optionsIn);
         expect(callback).toEqual(jasmine.any(Function));
         testDone();
@@ -158,10 +158,10 @@ describe("Unit Test - InitializableObject", function () {
       var initializableObject = new InitializableObject();
       var expectedError = new Error("The error");
 
-      spyOn(initializableObject, 'canInitialize').andCallFake(function () {
+      spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').andCallFake(function (options, callback) {
+      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options, callback) {
         callback(expectedError);
       });
       initializableObject.initialize(undefined, function (error) {
@@ -176,10 +176,10 @@ describe("Unit Test - InitializableObject", function () {
       var slotInitializing = jasmine.createSpy("onInitializing");
       initializableObject.on('initializing', slotInitializing);
 
-      spyOn(initializableObject, 'canInitialize').andCallFake(function () {
+      spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').andCallFake(function () {
+      spyOn(initializableObject, '_handleInitialization').and.callFake(function () {
         expect(initializableObject.currentState).toEqual("Initializing");
         expect(slotInitializing).toHaveBeenCalled();
         testDone();
@@ -196,10 +196,10 @@ describe("Unit Test - InitializableObject", function () {
       var slotInitializationFailed = jasmine.createSpy("onInitializationFailed");
       initializableObject.on('initializationFailed', slotInitializationFailed);
 
-      spyOn(initializableObject, 'canInitialize').andCallFake(function () {
+      spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').andCallFake(function (options, callback) {
+      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options, callback) {
         callback(new Error("The error"));
       });
       initializableObject.initialize(undefined, function () {
@@ -215,10 +215,10 @@ describe("Unit Test - InitializableObject", function () {
       var slotInitializationSucceed = jasmine.createSpy("onInitializationSucceed");
       initializableObject.on('initializationSucceed', slotInitializationSucceed);
 
-      spyOn(initializableObject, 'canInitialize').andCallFake(function () {
+      spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleInitialization').andCallFake(function (options, callback) {
+      spyOn(initializableObject, '_handleInitialization').and.callFake(function (options, callback) {
         callback();
       });
       initializableObject.initialize(undefined, function () {
@@ -240,11 +240,10 @@ describe("Unit Test - InitializableObject", function () {
         }
       ];
 
-      spyOn(initializableObject, 'initialize').andCallFake(function () {
-        expect(arguments).toEqual({
-          0: args[0],
-          1: args[1]
-        });
+      spyOn(initializableObject, 'initialize').and.callFake(function () {
+        expect(arguments.length).toEqual(2);
+        expect(arguments[0]).toEqual(args[0]);
+        expect(arguments[1]).toEqual(args[1]);
         testDone();
       });
 
@@ -256,7 +255,7 @@ describe("Unit Test - InitializableObject", function () {
     it("Then must call canFinalize", function (testDone) {
       var initializableObject = new InitializableObject();
 
-      spyOn(initializableObject, 'canFinalize').andCallThrough();
+      spyOn(initializableObject, 'canFinalize').and.callThrough();
       initializableObject.finalize(undefined, function () {
         expect(initializableObject.canFinalize).toHaveBeenCalled();
         testDone();
@@ -266,7 +265,7 @@ describe("Unit Test - InitializableObject", function () {
     it("Given canFinalize return false Then must return error", function (testDone) {
       var initializableObject = new InitializableObject();
 
-      spyOn(initializableObject, 'canFinalize').andCallFake(function () {
+      spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return false;
       });
       initializableObject.finalize(undefined, function (error) {
@@ -283,10 +282,10 @@ describe("Unit Test - InitializableObject", function () {
         b: 12
       };
 
-      spyOn(initializableObject, 'canFinalize').andCallFake(function () {
+      spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').andCallFake(function (options, callback) {
+      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options, callback) {
         expect(options).toEqual(optionsIn);
         expect(callback).toEqual(jasmine.any(Function));
         testDone();
@@ -301,10 +300,10 @@ describe("Unit Test - InitializableObject", function () {
       var initializableObject = new InitializableObject();
       var expectedError = new Error("The error");
 
-      spyOn(initializableObject, 'canFinalize').andCallFake(function () {
+      spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').andCallFake(function (options, callback) {
+      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options, callback) {
         callback(expectedError);
       });
       initializableObject.finalize(undefined, function (error) {
@@ -319,10 +318,10 @@ describe("Unit Test - InitializableObject", function () {
       var slotFinalizing = jasmine.createSpy("onFinalizing");
       initializableObject.on('finalizing', slotFinalizing);
 
-      spyOn(initializableObject, 'canFinalize').andCallFake(function () {
+      spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').andCallFake(function () {
+      spyOn(initializableObject, '_handleFinalization').and.callFake(function () {
         expect(initializableObject.currentState).toEqual("Finalizing");
         expect(slotFinalizing).toHaveBeenCalled();
         testDone();
@@ -340,10 +339,10 @@ describe("Unit Test - InitializableObject", function () {
       var slotFinalizationFailed = jasmine.createSpy("onFinalizationFailed");
       initializableObject.on('finalizationFailed', slotFinalizationFailed);
 
-      spyOn(initializableObject, 'canFinalize').andCallFake(function () {
+      spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').andCallFake(function (options, callback) {
+      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options, callback) {
         callback(new Error("The error"));
       });
       initializableObject.finalize(undefined, function () {
@@ -359,10 +358,10 @@ describe("Unit Test - InitializableObject", function () {
       var slotFinalizationSucceed = jasmine.createSpy("onFinalizationSucceed");
       initializableObject.on('finalizationSucceed', slotFinalizationSucceed);
 
-      spyOn(initializableObject, 'canFinalize').andCallFake(function () {
+      spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return true;
       });
-      spyOn(initializableObject, '_handleFinalization').andCallFake(function (options, callback) {
+      spyOn(initializableObject, '_handleFinalization').and.callFake(function (options, callback) {
         callback();
       });
       initializableObject.finalize(function () {

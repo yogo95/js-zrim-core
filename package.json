@@ -4,7 +4,9 @@
   "description": "Contains core library",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine-node/lib/jasmine-node/cli.js tests/ -- --captureExceptions --color --verbose"
+    "test": "npm run unitTest",
+    "unitTest": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=test/unit/jasmine.config.json",
+    "unitTestWithoutCoverage": "jasmine JASMINE_CONFIG_PATH=test/unit/jasmine.config.json"
   },
   "repository": {
     "type": "git",
@@ -24,7 +26,6 @@
     "winston": "^2.3.1"
   },
   "devDependencies": {
-    "istanbul": "^0.4.5",
-    "jasmine-node": "^1.14.5"
+    "istanbul": "^0.4.5"
   }
 }
