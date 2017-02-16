@@ -2,9 +2,9 @@
  * Unit Test - ProxyLogger
  */
 
-var ProxyLogger = require('../../../lib/ProxyLogger');
+const ProxyLogger = require('../../../lib/ProxyLogger');
 
-var _ = require('lodash')
+const _ = require('lodash')
   ;
 
 describe("Unit Test - ProxyLogger", function () {
@@ -17,20 +17,20 @@ describe("Unit Test - ProxyLogger", function () {
 
   describe("When instantiate", function () {
     it("When not using the new operator Then must return new instance", function () {
-      var value = ProxyLogger();
-      expect(value).toEqual(jasmine.any(ProxyLogger));
+      const instance = ProxyLogger();
+      expect(instance).toEqual(jasmine.any(ProxyLogger));
     });
 
     it("When using the new operator must return new instance", function () {
-      var value = new ProxyLogger();
-      expect(value).toEqual(jasmine.any(ProxyLogger));
+      const instance = ProxyLogger();
+      expect(instance).toEqual(jasmine.any(ProxyLogger));
     });
 
     it("Then must have logs function", function () {
-      var value = new ProxyLogger();
+      const instance = ProxyLogger();
 
       _.each(['error', 'warn', 'warn', 'info', 'verbose', 'debug', 'silly'], function (levelName) {
-        expect(value[levelName]).toEqual(jasmine.any(Function));
+        expect(instance[levelName]).toEqual(jasmine.any(Function));
       });
     });
 
@@ -38,21 +38,21 @@ describe("Unit Test - ProxyLogger", function () {
       var target = {
         a: 8
       };
-      var value = new ProxyLogger({
+      var instance = new ProxyLogger({
         target: target
       });
-      expect(value.properties.target).toBe(target);
+      expect(instance.properties.target).toBe(target);
     });
 
     it("Given prefixes as string Then must set internal properties prefixes and prefixLog", function () {
-      var value = new ProxyLogger({
+      var instance = new ProxyLogger({
         prefixes: "az"
       });
 
-      expect(value.properties.prefixes).toEqual([
+      expect(instance.properties.prefixes).toEqual([
         "az"
       ]);
-      expect(value.properties.prefixLog).toEqual("[az]");
+      expect(instance.properties.prefixLog).toEqual("[az]");
     });
 
     it("Given prefixes as string array Then must set internal properties prefixes and prefixLog", function () {
@@ -60,85 +60,97 @@ describe("Unit Test - ProxyLogger", function () {
         "az",
         "l"
       ];
-      var value = new ProxyLogger({
+      var instance = new ProxyLogger({
         prefixes: prefixes
       });
 
-      expect(value.properties.prefixes).toEqual(prefixes);
-      expect(value.properties.prefixLog).toEqual("[az][l]");
+      expect(instance.properties.prefixes).toEqual(prefixes);
+      expect(instance.properties.prefixLog).toEqual("[az][l]");
+    });
+
+    it("Given metaData Then must set internal properties metaData", function () {
+      const metaData = [
+        "az",
+        "l"
+      ];
+      const instance = new ProxyLogger({
+        metaData: metaData
+      });
+
+      expect(instance.properties.metaData).toBe(metaData);
     });
   }); // End of When instantiate
 
   describe("When getRootTarget", function () {
     it("Given target nil Then must return undefined", function () {
-      var value = new ProxyLogger();
-      expect(value.getRootTarget()).toBeUndefined();
+      const instance = ProxyLogger();
+      expect(instance.getRootTarget()).toBeUndefined();
     });
 
     it("Given target as object Then must return the object", function () {
-      var value = new ProxyLogger();
-      var targetObject = {
+      const instance = ProxyLogger();
+      const targetObject = {
         a: ""
       };
-      value.properties.target = targetObject;
-      expect(value.getRootTarget()).toEqual(targetObject);
+      instance.properties.target = targetObject;
+      expect(instance.getRootTarget()).toEqual(targetObject);
     });
 
     it("Given target as object Then must return the object", function () {
-      var value = new ProxyLogger();
-      var targetObject = Object.create(ProxyLogger.prototype);
-      var fakeTarget = jasmine.createSpy("FakeTarget");
-      value.properties.target = targetObject;
+      const instance = ProxyLogger();
+      const targetObject = Object.create(ProxyLogger.prototype);
+      const fakeTarget = jasmine.createSpy("FakeTarget");
+      instance.properties.target = targetObject;
       targetObject.getRootTarget = jasmine.createSpy("getRootTarget");
       targetObject.getRootTarget.and.callFake(function () {
         return fakeTarget;
       });
-      expect(value.getRootTarget()).toEqual(fakeTarget);
+      expect(instance.getRootTarget()).toEqual(fakeTarget);
       expect(targetObject.getRootTarget).toHaveBeenCalled();
     });
   }); // End of When getRootTarget
 
   describe("When isDebugEnabled", function () {
     it("Then must call getRootTarget", function () {
-      var value = new ProxyLogger();
-      value.getRootTarget = jasmine.createSpy("getRootTarget");
-      value.isDebugEnabled();
-      expect(value.getRootTarget).toHaveBeenCalled();
+      const instance = ProxyLogger();
+      instance.getRootTarget = jasmine.createSpy("getRootTarget");
+      instance.isDebugEnabled();
+      expect(instance.getRootTarget).toHaveBeenCalled();
     });
 
     it("Given target undefined Then must return false", function () {
-      var value = new ProxyLogger();
-      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
+      const instance = ProxyLogger();
+      instance.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return undefined;
       });
-      expect(value.isDebugEnabled()).toBeFalsy();
+      expect(instance.isDebugEnabled()).toBeFalsy();
     });
 
     it("Given target defined and debug mode Then must return false", function () {
-      var value = new ProxyLogger();
-      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
+      const instance = ProxyLogger();
+      instance.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return {
           level: 'debug'
         };
       });
-      expect(value.isDebugEnabled()).toBeTruthy();
+      expect(instance.isDebugEnabled()).toBeTruthy();
     });
   });
 
   describe("When generatePrefixLog", function () {
     it("Given undefined Then must return undefined", function () {
-      var value = new ProxyLogger();
-      expect(value.generatePrefixLog()).toBeUndefined();
+      const instance = ProxyLogger();
+      expect(instance.generatePrefixLog()).toBeUndefined();
     });
 
     it("Given string Then must return expected value", function () {
-      var value = new ProxyLogger();
-      expect(value.generatePrefixLog("qwerty")).toEqual("[qwerty]");
+      const instance = ProxyLogger();
+      expect(instance.generatePrefixLog("qwerty")).toEqual("[qwerty]");
     });
 
     it("Given array with some string Then must return expected value", function () {
-      var value = new ProxyLogger();
-      var prefixes = [
+      const instance = ProxyLogger();
+      const prefixes = [
         "a",
         {},
         "b",
@@ -146,117 +158,125 @@ describe("Unit Test - ProxyLogger", function () {
         "c",
         []
       ];
-      expect(value.generatePrefixLog(prefixes)).toEqual("[a][b][c]");
+      expect(instance.generatePrefixLog(prefixes)).toEqual("[a][b][c]");
     });
   });
 
   describe("When property target", function () {
     it("Given target undefined When get Then must return undefined", function () {
-      var value = new ProxyLogger();
-      value.properties.target = undefined;
-      expect(value.target).toBeUndefined();
+      const instance = ProxyLogger();
+      instance.properties.target = undefined;
+      expect(instance.target).toBeUndefined();
     });
 
     it("Given target object When get Then must return expected value", function () {
-      var value = new ProxyLogger();
-      var expectedValue = jasmine.createSpy();
-      value.properties.target = expectedValue;
-      expect(value.target).toBe(expectedValue);
+      const instance = ProxyLogger();
+      const expectedValue = jasmine.createSpy();
+      instance.properties.target = expectedValue;
+      expect(instance.target).toBe(expectedValue);
     });
 
     it("Given object When set Then must set target", function () {
-      var value = new ProxyLogger();
-      var expectedValue = {
+      const instance = ProxyLogger();
+      const expectedValue = {
         a: ""
       };
-      value.target = expectedValue;
-      expect(value.properties.target).toBe(expectedValue);
+      instance.target = expectedValue;
+      expect(instance.properties.target).toBe(expectedValue);
     });
 
     it("Given undefined When set Then must target to undefined", function () {
-      var value = new ProxyLogger();
-      value.properties.target = {
+      const instance = ProxyLogger();
+      instance.properties.target = {
         a: ""
       };
-      value.target = undefined;
-      expect(value.properties.target).toBeUndefined();
+      instance.target = undefined;
+      expect(instance.properties.target).toBeUndefined();
     });
 
     it("Given other that undefined or object When set Then must do nothing", function () {
-      var value = new ProxyLogger();
-      var expectedValue = {
+      const instance = ProxyLogger();
+      const expectedValue = {
         a: ""
       };
-      value.properties.target = expectedValue;
-      value.target = function () {
+      instance.properties.target = expectedValue;
+      instance.target = function () {
 
       };
-      expect(value.properties.target).toBe(expectedValue);
+      expect(instance.properties.target).toBe(expectedValue);
     });
   });
 
   describe("When log", function () {
     it("Given not string level name Then must do nothing", function () {
-      var value = new ProxyLogger();
-      var getRootTarget = jasmine.createSpy("getRootTarget");
-      value.getRootTarget = getRootTarget;
-      value.log({});
+      const instance = ProxyLogger();
+      const getRootTarget = jasmine.createSpy("getRootTarget");
+      const generateMetaData = jasmine.createSpy("generateMetaData");
+      instance.getRootTarget = getRootTarget;
+      instance.generateMetaData = generateMetaData;
+      instance.log({});
       expect(getRootTarget).not.toHaveBeenCalled();
+      expect(generateMetaData).not.toHaveBeenCalled();
     });
 
     it("Given target level not exists but log function do Then must call log function", function () {
-      var value = new ProxyLogger();
-      var targetMock = {
+      const instance = ProxyLogger();
+      const targetMock = {
         log: jasmine.createSpy("log")
       };
-      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
+      instance.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return targetMock;
       });
 
-      value.log("az");
-      expect(value.getRootTarget).toHaveBeenCalled();
+      instance.log("az");
+      expect(instance.getRootTarget).toHaveBeenCalled();
       expect(targetMock.log).toHaveBeenCalledWith("az");
     });
 
     it("Given target level not exists but log function do with prefixes Then must call log function with valid arguments", function () {
-      var value = new ProxyLogger({
+      const instance = new ProxyLogger({
         prefixes: [
           "ab",
           "cd"
         ]
       });
-      var targetMock = {
+      const targetMock = {
         log: jasmine.createSpy("log")
       };
-      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
+      instance.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return targetMock;
       });
 
-      value.log("debug", "az");
-      value.log("debug", "[az]");
-      expect(value.getRootTarget).toHaveBeenCalled();
-      expect(targetMock.log).toHaveBeenCalledWith("debug", "[ab][cd] az");
-      expect(targetMock.log).toHaveBeenCalledWith("debug", "[ab][cd][az]");
+      const expectedMetaData = {
+        a: 45
+      };
+      instance.generateMetaData = jasmine.createSpy("generateMetaData").and.callFake(() => expectedMetaData);
+
+      instance.log("debug", "az");
+      instance.log("debug", "[az]");
+      expect(instance.getRootTarget).toHaveBeenCalled();
+      expect(targetMock.log).toHaveBeenCalledWith("debug", "[ab][cd] az", expectedMetaData);
+      expect(targetMock.log).toHaveBeenCalledWith("debug", "[ab][cd][az]", expectedMetaData);
     });
 
     it("Given target level exists and with prefixes Then must call target function with valid arguments", function () {
-      var value = new ProxyLogger({
+      const instance = new ProxyLogger({
         prefixes: [
           "ab",
           "cd"
         ]
       });
-      var targetMock = {
+      const targetMock = {
         log: jasmine.createSpy("log"),
         debug: jasmine.createSpy("debug")
       };
-      value.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
+      instance.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
         return targetMock;
       });
 
-      value.log("debug", "az");
-      value.log("debug", "[az]");
-      expect(value.getRootTarget).toHaveBeenCalled();
+      instance.log("debug", "az");
+      instance.log("debug", "[az]");
+      expect(instance.getRootTarget).toHaveBeenCalled();
       expect(targetMock.log).not.toHaveBeenCalled();
       expect(targetMock.debug).toHaveBeenCalledWith("[ab][cd] az");
       expect(targetMock.debug).toHaveBeenCalledWith("[ab][cd][az]");
@@ -265,18 +285,18 @@ describe("Unit Test - ProxyLogger", function () {
 
   describe("When of", function () {
     it("Given no argument Then must create new proxy logger", function () {
-      var firstProxy = new ProxyLogger();
-      var proxyFromOfFunction = firstProxy.of();
+      const firstProxy = new ProxyLogger();
+      const proxyFromOfFunction = firstProxy.of();
 
       expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
       expect(proxyFromOfFunction.target).toBe(firstProxy);
     });
 
     it("Given string argument Then must create new proxy logger", function () {
-      var firstProxy = new ProxyLogger({
+      const firstProxy = new ProxyLogger({
         prefixes: "a"
       });
-      var proxyFromOfFunction = firstProxy.of("b");
+      const proxyFromOfFunction = firstProxy.of("b");
 
       expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
       expect(proxyFromOfFunction.target).toBe(firstProxy);
@@ -284,14 +304,14 @@ describe("Unit Test - ProxyLogger", function () {
     });
 
     it("Given function with name argument Then must create new proxy logger", function () {
-      var firstProxy = new ProxyLogger({
+      const firstProxy = new ProxyLogger({
         prefixes: "a"
       });
       
       function testFunctionName() {
         
       }
-      var proxyFromOfFunction = firstProxy.of(testFunctionName);
+      const proxyFromOfFunction = firstProxy.of(testFunctionName);
 
       expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
       expect(proxyFromOfFunction.target).toBe(firstProxy);
@@ -299,11 +319,11 @@ describe("Unit Test - ProxyLogger", function () {
     });
 
     it("Given anonymous function argument Then must create new proxy logger", function () {
-      var firstProxy = new ProxyLogger({
+      const firstProxy = new ProxyLogger({
         prefixes: "a"
       });
 
-      var proxyFromOfFunction = firstProxy.of(function () {
+      const proxyFromOfFunction = firstProxy.of(function () {
 
       });
 
@@ -326,7 +346,7 @@ describe("Unit Test - ProxyLogger", function () {
       expect(ProxyLogger.prototype.testMe).not.toBeDefined();
       ProxyLogger.defineLogLevel("testMe");
 
-      var instance = new ProxyLogger();
+      const instance = new ProxyLogger();
       instance.log = jasmine.createSpy().and.callFake(function (levelName) {
         expect(levelName).toEqual("testMe");
         expect(arguments.length).toEqual(2);
@@ -351,7 +371,7 @@ describe("Unit Test - ProxyLogger", function () {
       expect(ProxyLogger.prototype.testMe).not.toBeDefined();
       ProxyLogger.defineLogLevelAlias("debug", "testMe");
 
-      var instance = new ProxyLogger();
+      const instance = new ProxyLogger();
       instance.log = jasmine.createSpy().and.callFake(function (levelName) {
         expect(levelName).toEqual("debug");
         expect(arguments.length).toEqual(2);
@@ -372,4 +392,70 @@ describe("Unit Test - ProxyLogger", function () {
       });
     });
   }); // End of defineSysLogLevels
+
+  describe("#generateMetaData", function () {
+    it("Given no metaData Then must return undefined", function () {
+      const instance = new ProxyLogger();
+      expect(instance.generateMetaData()).not.toBeDefined();
+    });
+
+    it("Given metadata as function Then must call it and return result", function () {
+      const instance = new ProxyLogger();
+      const expectedResult = {
+        a: 12
+      };
+      instance.properties.metaData = jasmine.createSpy("metaData").and.callFake(() => expectedResult);
+      expect(instance.generateMetaData()).toBe(expectedResult);
+    });
+
+    it("Given metadata as function that failed Then must call it and return error", function () {
+      const instance = new ProxyLogger();
+      const expectedResult = {
+        a: 12
+      };
+      instance.properties.metaData = jasmine.createSpy("metaData").and.throwError("The error");
+      expect(instance.generateMetaData()).toEqual({asymmetricMatch: function (val) {
+        if (!_.isObjectLike(val)) {
+          return false;
+        }
+
+        if (!_.isObjectLike(val.__ProxyLogger_unexpectedError)) {
+          return false;
+        }
+
+        const container = val.__ProxyLogger_unexpectedError;
+        return !_.isNil(container.error) && _.isString(container.stack) && _.isString(container.message);
+      }});
+    });
+
+    it("Given metadata as object Then must return it", function () {
+      const instance = new ProxyLogger();
+      const expectedResult = {
+        a: 12
+      };
+      instance.properties.metaData = expectedResult;
+      expect(instance.generateMetaData()).toBe(expectedResult);
+    });
+
+    it("Given metadata as string|number|boolean Then must return it", function () {
+      const instance = new ProxyLogger();
+      let expectedResult = {
+        data: "12a"
+      };
+      instance.properties.metaData = "12a";
+      expect(instance.generateMetaData()).toEqual(expectedResult);
+
+      expectedResult = {
+        data: 12
+      };
+      instance.properties.metaData = 12;
+      expect(instance.generateMetaData()).toEqual(expectedResult);
+
+      expectedResult = {
+        data: true
+      };
+      instance.properties.metaData = true;
+      expect(instance.generateMetaData()).toEqual(expectedResult);
+    });
+  }); // End of #generateMetaData
 });
