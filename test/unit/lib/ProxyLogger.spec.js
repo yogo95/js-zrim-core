@@ -293,24 +293,30 @@ describe("Unit Test - ProxyLogger", function () {
     });
 
     it("Given string argument Then must create new proxy logger", function () {
+      const metaData = {
+        k: 12
+      };
       const firstProxy = new ProxyLogger({
-        prefixes: "a"
+        prefixes: "a",
+        metaData: metaData
       });
       const proxyFromOfFunction = firstProxy.of("b");
 
       expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
       expect(proxyFromOfFunction.target).toBe(firstProxy);
       expect(proxyFromOfFunction.properties.prefixes).toEqual(["a", "b"]);
+      expect(proxyFromOfFunction.properties.metaData).toBe(metaData);
     });
 
     it("Given function with name argument Then must create new proxy logger", function () {
       const firstProxy = new ProxyLogger({
         prefixes: "a"
       });
-      
+
       function testFunctionName() {
-        
+
       }
+
       const proxyFromOfFunction = firstProxy.of(testFunctionName);
 
       expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
@@ -331,6 +337,124 @@ describe("Unit Test - ProxyLogger", function () {
       expect(proxyFromOfFunction.target).toBe(firstProxy);
       expect(proxyFromOfFunction.properties.prefixes).toEqual(["a", "anonymous"]);
     });
+
+    describe("Given options as argument", function () {
+      it("Given prefixes as string Then must create new proxy logger", function () {
+        const firstProxy = new ProxyLogger({
+          prefixes: "a"
+        });
+        const proxyFromOfFunction = firstProxy.of({
+          prefixes: "b"
+        });
+
+        expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
+        expect(proxyFromOfFunction.target).toBe(firstProxy);
+        expect(proxyFromOfFunction.properties.prefixes).toEqual(["a", "b"]);
+      });
+
+      it("Given prefixes as function with name argument Then must create new proxy logger", function () {
+        const firstProxy = new ProxyLogger({
+          prefixes: "a"
+        });
+
+        function testFunctionName() {
+
+        }
+
+        const proxyFromOfFunction = firstProxy.of({
+          prefixes: testFunctionName
+        });
+
+        expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
+        expect(proxyFromOfFunction.target).toBe(firstProxy);
+        expect(proxyFromOfFunction.properties.prefixes).toEqual(["a", "testFunctionName"]);
+      });
+
+      it("Given prefixes as string[] Then must create new proxy logger", function () {
+        const firstProxy = new ProxyLogger({
+          prefixes: "a"
+        });
+        const proxyFromOfFunction = firstProxy.of({
+          prefixes: ["b", 12, "c"]
+        });
+
+        expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
+        expect(proxyFromOfFunction.target).toBe(firstProxy);
+        expect(proxyFromOfFunction.properties.prefixes).toEqual(["a", "b", "c"]);
+      });
+
+      it("Given metaData without type Then must replace it", function () {
+        const firstProxy = new ProxyLogger();
+        const expectedMetaData = {
+          v: 123
+        };
+        const proxyFromOfFunction = firstProxy.of({
+          metaData: expectedMetaData
+        });
+
+        expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
+        expect(proxyFromOfFunction.target).toBe(firstProxy);
+        expect(proxyFromOfFunction.properties.metaData).toBe(expectedMetaData);
+      });
+
+      it("Given metaData with invalid type Then must replace it", function () {
+        const firstProxy = new ProxyLogger();
+        const expectedMetaData = {
+          v: 123
+        };
+        const proxyFromOfFunction = firstProxy.of({
+          metaData: expectedMetaData,
+          metaDataType: "test"
+        });
+
+        expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
+        expect(proxyFromOfFunction.target).toBe(firstProxy);
+        expect(proxyFromOfFunction.properties.metaData).toBe(expectedMetaData);
+      });
+
+      it("Given metaData with merge type Then must call tryMergeMetaData and return the expected value", function () {
+        const firstProxy = new ProxyLogger();
+        firstProxy.properties.metaData = "a";
+        const expectedMetaData = {
+          v: 123
+        };
+
+        firstProxy.tryMergeMetaData = jasmine.createSpy("tryMergeMetaData").and.callFake(() => expectedMetaData);
+        const proxyFromOfFunction = firstProxy.of({
+          metaData: "b",
+          metaDataType: "merge"
+        });
+
+        expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
+        expect(proxyFromOfFunction.target).toBe(firstProxy);
+        expect(firstProxy.tryMergeMetaData).toHaveBeenCalledTimes(1);
+        expect(firstProxy.tryMergeMetaData).toHaveBeenCalledWith("a", "b");
+        expect(proxyFromOfFunction.properties.metaData).toBe(expectedMetaData);
+      });
+
+      it("Given metaData with merge type And tryMergeMetaData returns undefined Then must call tryMergeMetaData and return the expected value", function () {
+        const firstProxy = new ProxyLogger();
+        firstProxy.properties.metaData = "a";
+        const expectedMetaData = {
+          __ProxyLogger_mergeError: {
+            origin: "a",
+            metaData: "b"
+          }
+        };
+
+        firstProxy.tryMergeMetaData = jasmine.createSpy("tryMergeMetaData").and.callFake(() => undefined);
+        const proxyFromOfFunction = firstProxy.of({
+          metaData: "b",
+          metaDataType: "merge"
+        });
+
+        expect(proxyFromOfFunction).toEqual(jasmine.any(ProxyLogger));
+        expect(proxyFromOfFunction.target).toBe(firstProxy);
+        expect(firstProxy.tryMergeMetaData).toHaveBeenCalledTimes(1);
+        expect(firstProxy.tryMergeMetaData).toHaveBeenCalledWith("a", "b");
+        expect(proxyFromOfFunction.properties.metaData).toEqual(expectedMetaData);
+      });
+    }); // End of #of(Options)
   }); // End of When of
 
   describe("When defineLogLevel", function () {
@@ -414,18 +538,20 @@ describe("Unit Test - ProxyLogger", function () {
         a: 12
       };
       instance.properties.metaData = jasmine.createSpy("metaData").and.throwError("The error");
-      expect(instance.generateMetaData()).toEqual({asymmetricMatch: function (val) {
-        if (!_.isObjectLike(val)) {
-          return false;
-        }
+      expect(instance.generateMetaData()).toEqual({
+        asymmetricMatch: function (val) {
+          if (!_.isObjectLike(val)) {
+            return false;
+          }
 
-        if (!_.isObjectLike(val.__ProxyLogger_unexpectedError)) {
-          return false;
-        }
+          if (!_.isObjectLike(val.__ProxyLogger_unexpectedError)) {
+            return false;
+          }
 
-        const container = val.__ProxyLogger_unexpectedError;
-        return !_.isNil(container.error) && _.isString(container.stack) && _.isString(container.message);
-      }});
+          const container = val.__ProxyLogger_unexpectedError;
+          return !_.isNil(container.error) && _.isString(container.stack) && _.isString(container.message);
+        }
+      });
     });
 
     it("Given metadata as object Then must return it", function () {
@@ -458,4 +584,63 @@ describe("Unit Test - ProxyLogger", function () {
       expect(instance.generateMetaData()).toEqual(expectedResult);
     });
   }); // End of #generateMetaData
+
+  describe("#tryMergeMetaData", function () {
+    const tryMergeMetaData = ProxyLogger.prototype.tryMergeMetaData;
+    it("Given different value Then must return undefined", function () {
+      expect(tryMergeMetaData(12, "a")).not.toBeDefined();
+    });
+
+    it("Given different value but a undefined Then must return b", function () {
+      expect(tryMergeMetaData(undefined, "b")).toEqual("b");
+    });
+    it("Given different value but b undefined Then must return b", function () {
+      expect(tryMergeMetaData("a", undefined)).toEqual("a");
+    });
+
+    it("Given same value and unknown type Then must return undefined", function () {
+      expect(tryMergeMetaData(undefined, undefined)).not.toBeDefined();
+    });
+
+    it("Given same value with type number|string|boolean Then must return expected value", function () {
+      expect(tryMergeMetaData("a", "b")).toEqual({
+        data: ["a", "b"]
+      });
+
+      expect(tryMergeMetaData(1, 5)).toEqual({
+        data: [1, 5]
+      });
+
+      expect(tryMergeMetaData(true, false)).toEqual({
+        data: [true, false]
+      });
+    });
+
+    it("Given same value with type object Them must return expected value", function () {
+      expect(tryMergeMetaData({a: 1}, {b: 5})).toEqual({
+        a: 1,
+        b: 5
+      });
+    });
+
+    it("Given same value with type function Them must return expected value", function () {
+
+      const mergeResult = tryMergeMetaData(
+        () => {
+          return {a: 1};
+        },
+        () => {
+          return {b: 6};
+        }
+      );
+
+      expect(mergeResult).toEqual(jasmine.any(Function));
+      if (_.isFunction(mergeResult)) {
+        expect(mergeResult()).toEqual({
+          a: 1,
+          b: 6
+        })
+      }
+    });
+  });
 });
