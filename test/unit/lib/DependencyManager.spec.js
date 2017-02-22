@@ -371,4 +371,35 @@ describe("Unit test - DependencyManager", function () {
       ]);
     });
   }); // End of #all
+
+  describe("#containAll", function () {
+    it("Given no array and do not contains Then must return expected value", function () {
+      const instance = new DependencyManager();
+      instance.contains = jasmine.createSpy("contains").and.callFake(() => false);
+      expect(instance.containAll("az")).toEqual({
+        found: {
+          names: []
+        },
+        notFound: {
+          names: ["az"]
+        }
+      });
+    });
+
+    it("Given array Then must return expected value", function () {
+      const instance = new DependencyManager();
+      instance.contains = jasmine.createSpy("contains").and.callFake(name => name === "a");
+      expect(instance.containAll(["c", "a", "b"])).toEqual({
+        found: {
+          names: ["a"]
+        },
+        notFound: {
+          names: ["c", "b"]
+        }
+      });
+      expect(instance.contains).toHaveBeenCalledWith("a");
+      expect(instance.contains).toHaveBeenCalledWith("b");
+      expect(instance.contains).toHaveBeenCalledWith("c");
+    });
+  }); // End of #containAll
 });
