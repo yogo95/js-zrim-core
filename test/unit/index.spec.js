@@ -20,7 +20,9 @@ describe("Unit Test - index.js", function () {
             'ConnectableObject',
             'LoadableObject',
             'ProxyLogger',
-            'exceptions'
+            'exceptions',
+            'DependencyEntry',
+            'DependencyManager'
         ];
         _.each(expectedFunctions, function (fnName) {
             it("Must contains '" + fnName + "' as 'Function'", function () {

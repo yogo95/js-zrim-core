@@ -9,6 +9,8 @@
  * @property {ConnectableObject} ConnectableObject The connectable object
  * @property {ProxyLogger} ProxyLogger The proxy logger
  * @property {BaseExceptionsModule} ProxyLogger The proxy logger
+ * @property {DependencyManager} DependencyManager The dependency manager
+ * @property {DependencyEntry} DependencyEntry The dependency manager entry
  */
 
 /**
@@ -23,6 +25,8 @@ requireSubModule.InitializableObject = require("./lib/InitializableObject");
 requireSubModule.ConnectableObject = require("./lib/ConnectableObject");
 requireSubModule.LoadableObject = require("./lib/LoadableObject");
 requireSubModule.ProxyLogger = require("./lib/ProxyLogger");
+requireSubModule.DependencyEntry = require("./lib/DependencyEntry");
+requireSubModule.DependencyManager = require("./lib/DependencyManager");
 
 // Contains exceptions
 requireSubModule.exceptions = require("./lib/exceptions/index");
