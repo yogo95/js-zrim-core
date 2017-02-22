@@ -15,6 +15,18 @@ describe("Unit test - DependencyEntry", function () {
     });
   }); // End when require
 
+  describe("When instantiate", function () {
+    it("When not using the new operator Then must return new instance", function () {
+      const instance = DependencyEntry();
+      expect(instance).toEqual(jasmine.any(DependencyEntry));
+    });
+
+    it("When using the new operator must return new instance", function () {
+      const instance = DependencyEntry();
+      expect(instance).toEqual(jasmine.any(DependencyEntry));
+    });
+  }); // End of When instantiate
+
   describe("#formatName", function () {
     it("Given no string Then must throw exception", function () {
       _.each([
