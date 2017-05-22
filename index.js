@@ -27,6 +27,7 @@ requireSubModule.LoadableObject = require("./lib/LoadableObject");
 requireSubModule.ProxyLogger = require("./lib/ProxyLogger");
 requireSubModule.DependencyEntry = require("./lib/DependencyEntry");
 requireSubModule.DependencyManager = require("./lib/DependencyManager");
+requireSubModule.RunnableObject = require("./lib/RunnableObject");
 
 // Contains exceptions
 requireSubModule.exceptions = require("./lib/exceptions/index");
