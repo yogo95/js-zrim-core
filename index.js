@@ -32,5 +32,7 @@ requireSubModule.RunnableObject = require("./lib/RunnableObject");
 // Contains exceptions
 requireSubModule.exceptions = require("./lib/exceptions/index");
 requireSubModule.common = require("./lib/common/index");
+// Contains mocks
+requireSubModule.mocks = require("./lib/mocks/index");
 
 exports = module.exports = requireSubModule;
