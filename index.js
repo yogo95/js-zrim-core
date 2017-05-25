@@ -34,5 +34,7 @@ requireSubModule.exceptions = require("./lib/exceptions/index");
 requireSubModule.common = require("./lib/common/index");
 // Contains mocks
 requireSubModule.mocks = require("./lib/mocks/index");
+// Services
+requireSubModule.services = require("./lib/services/index");
 
 exports = module.exports = requireSubModule;
