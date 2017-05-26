@@ -42,14 +42,24 @@ describe("Unit test - StringUtils", function () {
   }); // When is
 
   describe("When isEmpty", function () {
-    it("Given non string Then must return false", function () {
+    it("Given undefined/null/false Then must return true", function () {
       var testsArgs = [
         [],
+        [false],
+        [null]
+      ];
+
+      _.each(testsArgs, function (args) {
+        expect(stringUtils.isEmpty.apply(stringUtils, args)).toBeTruthy();
+      });
+    });
+
+    it("Given non string Then must return false", function () {
+      var testsArgs = [
         [[]],
         [{}],
         [1],
         [true],
-        [null]
       ];
 
       _.each(testsArgs, function (args) {
@@ -92,14 +102,25 @@ describe("Unit test - StringUtils", function () {
   }); // When isNotEmpty
 
   describe("When isBlank", function () {
-    it("Given non string Then must return false", function () {
+    it("Given undefined/null/false Then must return true", function () {
       var testsArgs = [
         [],
+        [null],
+        [false]
+      ];
+
+      _.each(testsArgs, function (args) {
+        expect(stringUtils.isBlank.apply(stringUtils, args)).toBeTruthy();
+      });
+    });
+
+
+    it("Given non string Then must return false", function () {
+      var testsArgs = [
         [[]],
         [{}],
         [1],
-        [true],
-        [null]
+        [true]
       ];
 
       _.each(testsArgs, function (args) {
