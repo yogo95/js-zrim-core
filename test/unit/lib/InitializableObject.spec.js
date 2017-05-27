@@ -2,16 +2,25 @@
  * Unit test for InitializableObject
  */
 
-const InitializableObject = require("../../../lib/InitializableObject");
-
-const _ = require('lodash'),
-  BaseObject = require('../../../lib/BaseObject'),
-  IllegalStateException = require("../../../lib/exceptions/IllegalStateException")
-  ;
-
-const DEFAULT_TIMEOUT = 2000;
-
 describe("Unit Test - InitializableObject", function () {
+
+  const InitializableObject = require("../../../lib/InitializableObject"),
+    _ = require('lodash'),
+    BaseObject = require('../../../lib/BaseObject'),
+    IllegalStateException = require("../../../lib/exceptions/IllegalStateException"),
+    LoggerMock = require("./../../../lib/mocks").LoggerMock;
+
+  const DEFAULT_TIMEOUT = 2000;
+
+  /**
+   * Create instance for test
+   * @return {InitializableObject} The object created
+   */
+  function createInstance() {
+    return new InitializableObject({
+      loggerTarget: new LoggerMock()
+    });
+  }
 
   describe("When require the InitializableObject", function () {
 
@@ -66,7 +75,7 @@ describe("Unit Test - InitializableObject", function () {
 
     describe("When canInitialize", function () {
       it("Given state NotInitialized Then must return true", function () {
-        const initializableObject = new InitializableObject();
+        const initializableObject = createInstance();
         initializableObject.properties.currentState = InitializableObject.States.NotInitialized;
 
         const response = initializableObject.canInitialize();
@@ -74,7 +83,7 @@ describe("Unit Test - InitializableObject", function () {
       });
 
       it("Given state other Than NotInitialized Then must return true", function () {
-        const initializableObject = new InitializableObject();
+        const initializableObject = createInstance();
         initializableObject.properties.currentState = InitializableObject.States.Ready;
 
         const response = initializableObject.canInitialize();
@@ -84,14 +93,14 @@ describe("Unit Test - InitializableObject", function () {
 
     describe("When canFinalize", function () {
       it("Given state ready Then must return true", function () {
-        const initializableObject = new InitializableObject();
+        const initializableObject = createInstance();
         initializableObject.properties.currentState = InitializableObject.States.Ready;
 
         const response = initializableObject.canFinalize();
         expect(response).toBeTruthy();
       });
       it("Given state Initialized Then must return true", function () {
-        const initializableObject = new InitializableObject();
+        const initializableObject = createInstance();
         initializableObject.properties.currentState = InitializableObject.States.Initialized;
 
         const response = initializableObject.canFinalize();
@@ -100,7 +109,7 @@ describe("Unit Test - InitializableObject", function () {
 
 
       it("Given state other Than ready or Initialized Then must return true", function () {
-        const initializableObject = new InitializableObject();
+        const initializableObject = createInstance();
         initializableObject.properties.currentState = InitializableObject.States.NotInitialized;
 
         const response = initializableObject.canFinalize();
@@ -111,7 +120,7 @@ describe("Unit Test - InitializableObject", function () {
 
   describe("When initialize", function () {
     it("Then must call canInitialize", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       spyOn(initializableObject, 'canInitialize').and.callThrough();
       initializableObject.initialize()
@@ -126,7 +135,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given canInitialize return false Then must return error", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       spyOn(initializableObject, 'canInitialize').and.callFake(function () {
         return false;
@@ -151,7 +160,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must call _handleInitialization", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
       const optionsIn = {
         a: '',
         b: 12
@@ -170,7 +179,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given _handleInitialization returns error Then must return the error", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
       const expectedError = new Error("The error");
 
       spyOn(initializableObject, 'canInitialize').and.callFake(function () {
@@ -193,7 +202,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must change current state=Initializing before calling _handleInitialization", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       const slotInitializing = jasmine.createSpy("onInitializing");
       initializableObject.on('initializing', slotInitializing);
@@ -212,7 +221,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleInitialization returns error Then must emit initializationFailed and currentState=NotInitialized", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       const slotInitializationFailed = jasmine.createSpy("onInitializationFailed");
       initializableObject.on('initializationFailed', slotInitializationFailed);
@@ -235,7 +244,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleInitialization returns ok Then must emit initializationSucceed and currentState=Initialized", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       const slotInitializationSucceed = jasmine.createSpy("onInitializationSucceed");
       initializableObject.on('initializationSucceed', slotInitializationSucceed);
@@ -258,7 +267,7 @@ describe("Unit Test - InitializableObject", function () {
 
   describe("When init", function () {
     it("Then must call initialize", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       const args = [
         {a: ''}
@@ -278,7 +287,7 @@ describe("Unit Test - InitializableObject", function () {
 
   describe("When finalize", function () {
     it("Then must call canFinalize", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       spyOn(initializableObject, 'canFinalize').and.callThrough();
       const handleResult = () => {
@@ -289,7 +298,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given canFinalize return false Then must return error", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       spyOn(initializableObject, 'canFinalize').and.callFake(function () {
         return false;
@@ -307,7 +316,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must call _handleFinalization", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
       const optionsIn = {
         a: '',
         b: 12
@@ -330,7 +339,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given _handleFinalization returns error Then must return the error", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
       const expectedError = new Error("The error");
 
       spyOn(initializableObject, 'canFinalize').and.callFake(function () {
@@ -351,7 +360,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state Then must change current state=Finalizing before calling _handleFinalization", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       const slotFinalizing = jasmine.createSpy("onFinalizing");
       initializableObject.on('finalizing', slotFinalizing);
@@ -372,7 +381,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleFinalization returns error Then must emit finalizationFailed and currentState=Initialized", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
       initializableObject.properties.currentState = 'Initialized';
 
       const slotFinalizationFailed = jasmine.createSpy("onFinalizationFailed");
@@ -397,7 +406,7 @@ describe("Unit Test - InitializableObject", function () {
     }, DEFAULT_TIMEOUT);
 
     it("Given valid state and _handleFinalization returns ok Then must emit finalizationSucceed and currentState=NotInitialized", function (testDone) {
-      const initializableObject = new InitializableObject();
+      const initializableObject = createInstance();
 
       const slotFinalizationSucceed = jasmine.createSpy("onFinalizationSucceed");
       initializableObject.on('finalizationSucceed', slotFinalizationSucceed);

@@ -2,12 +2,24 @@
  * Unit test for ObjectStateWaiter
  */
 
-const ObjectStateWaiter =  require("./../../../lib/ObjectStateWaiter");
-const _ = require("lodash"),
-  BaseObject = require("./../../../lib/BaseObject")
-;
-
 describe("Unit Test - ObjectStateWaiter", function () {
+
+  const _ = require("lodash"),
+    ObjectStateWaiter =  require("./../../../lib/ObjectStateWaiter"),
+    BaseObject = require("./../../../lib/BaseObject"),
+    LoggerMock = require("./../../../lib/mocks").LoggerMock;
+
+
+  /**
+   * Create instance for test
+   * @return {ObjectStateWaiter} The object created
+   */
+  function createInstance() {
+    return new ObjectStateWaiter({
+      loggerTarget: new LoggerMock()
+    });
+  }
+
   describe("When require", function () {
     it("Then must be a function", function () {
       expect(ObjectStateWaiter).toEqual(jasmine.any(Function));
@@ -37,7 +49,7 @@ describe("Unit Test - ObjectStateWaiter", function () {
     });
 
     it("Given invalid argument Then must not call _watch", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       spyOn(instance, '_watch');
 
       _.each([
@@ -55,7 +67,7 @@ describe("Unit Test - ObjectStateWaiter", function () {
     });
 
     it("Given BaseObject Then must call _watch", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       spyOn(instance, '_watch');
 
       const objs = [
@@ -73,7 +85,7 @@ describe("Unit Test - ObjectStateWaiter", function () {
 
   describe("#_watch", function () {
     it("Given invalid argument Then must not add it into the list", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       spyOn(instance.properties.watchContainers, 'push');
 
       _.each([
@@ -91,7 +103,7 @@ describe("Unit Test - ObjectStateWaiter", function () {
     });
 
     it("Given BaseObject Then must add teh container", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       const obj = new BaseObject();
 
       spyOn(instance.properties.watchContainers, 'push').and.callFake(function (el) {
@@ -109,12 +121,12 @@ describe("Unit Test - ObjectStateWaiter", function () {
 
   describe("#timeout", function () {
     it("Must return itself", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       expect(instance.timeout()).toBe(instance);
     });
 
     it("Given invalid argument Then must do nothing", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.properties.timeout = -1;
 
       _.each([
@@ -131,13 +143,13 @@ describe("Unit Test - ObjectStateWaiter", function () {
     });
 
     it("Given number Then must set the value", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.timeout(128);
       expect(instance.properties.timeout).toEqual(128);
     });
 
     it("Given undefined Then must set the default value", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.properties.timeout = -1;
       instance.timeout();
       expect(instance.properties.timeout).not.toEqual(-1);
@@ -146,19 +158,19 @@ describe("Unit Test - ObjectStateWaiter", function () {
 
   describe("#getTimeout", function () {
     it("Given nothing Then must return timeout value", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       expect(instance.getTimeout()).toBe(instance.properties.timeout);
     });
   }); // End of #getTimeout
 
   describe("#stateName", function () {
     it("Must return itself", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       expect(instance.stateName()).toBe(instance);
     });
 
     it("Given invalid argument Then must do nothing", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.properties.stateName = "-1";
 
       _.each([
@@ -174,13 +186,13 @@ describe("Unit Test - ObjectStateWaiter", function () {
     });
 
     it("Given string Then must set the value", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.stateName("state");
       expect(instance.properties.stateName).toEqual("state");
     });
 
     it("Given undefined Then must set the default value", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.properties.stateName = "-1";
       instance.stateName();
       expect(instance.properties.stateName).toEqual(undefined);
@@ -189,7 +201,7 @@ describe("Unit Test - ObjectStateWaiter", function () {
 
   describe("#getStateName", function () {
     it("Given nothing Then must return state value", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.properties.stateName = "as";
       expect(instance.getStateName()).toBe(instance.properties.stateName);
     });
@@ -197,12 +209,12 @@ describe("Unit Test - ObjectStateWaiter", function () {
 
   describe("#wait", function () {
     it("Then must return Promise object", function () {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       expect(instance.wait()).toEqual(jasmine.any(Promise));
     });
 
     it("Given no object to wait and no callback Then must return success", function (testDone) {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.wait()
         .then(() => {
           expect(true).toBeTruthy();
@@ -216,7 +228,7 @@ describe("Unit Test - ObjectStateWaiter", function () {
     });
 
     it("Given object to wait and object never ready Then must return error", function (testDone) {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       instance.watch(new BaseObject()).stateName(BaseObject.States.Ready).timeout(10).wait()
         .then(() => {
           expect(false).toBeTruthy();
@@ -229,7 +241,7 @@ describe("Unit Test - ObjectStateWaiter", function () {
     });
 
     it("Given object to wait already ready Then must call success before the timeout", function (testDone) {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       const objToWait = new BaseObject();
       objToWait.currentState = BaseObject.States.Ready;
       instance.watch(objToWait).stateName(BaseObject.States.Ready).timeout(5).wait()
@@ -244,7 +256,7 @@ describe("Unit Test - ObjectStateWaiter", function () {
     });
 
     it("Given object to wait that will become ready Then must call success before the timeout", function (testDone) {
-      const instance = new ObjectStateWaiter();
+      const instance = createInstance();
       const objToWait = new BaseObject();
 
       setTimeout(() => {
