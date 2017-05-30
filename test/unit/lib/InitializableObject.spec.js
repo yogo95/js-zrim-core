@@ -118,6 +118,20 @@ describe("Unit Test - InitializableObject", function () {
     }); // end of canFinalize
   }); // End of checking instance
 
+  describe("#isInitialized", function () {
+    it("Set initialized true Then must return true", function () {
+      const initializableObject = createInstance();
+      initializableObject.properties._initialized = true;
+      expect(initializableObject.isInitialized()).toBeTruthy();
+    });
+
+    it("Set initialized false Then must return false", function () {
+      const initializableObject = createInstance();
+      initializableObject.properties._initialized = false;
+      expect(initializableObject.isInitialized()).toBeFalsy();
+    });
+  }); // #isInitialized
+
   describe("When initialize", function () {
     it("Then must call canInitialize", function (testDone) {
       const initializableObject = createInstance();
