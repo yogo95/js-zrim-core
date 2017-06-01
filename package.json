@@ -1,6 +1,6 @@
 {
   "name": "js-zrim-core",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "Contains core library",
   "main": "index.js",
   "scripts": {
