@@ -1,5 +1,5 @@
 describe("Unit Test - defaultLogger", function () {
-  const defaultLogger = require('./../../../lib/defaultLoggers');
+  const defaultLogger = require('./../../../lib/defaultLogger');
 
   describe("When require", function () {
     it("Then must return function", function () {

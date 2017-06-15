@@ -11,6 +11,7 @@
  * @property {BaseExceptionsModule} ProxyLogger The proxy logger
  * @property {DependencyManager} DependencyManager The dependency manager
  * @property {DependencyEntry} DependencyEntry The dependency manager entry
+ * @property {defaultLogger} defaultLogger Help to manage default loggers
  */
 
 /**
@@ -29,6 +30,7 @@ requireSubModule.ProxyLogger = require("./lib/ProxyLogger");
 requireSubModule.DependencyEntry = require("./lib/DependencyEntry");
 requireSubModule.DependencyManager = require("./lib/DependencyManager");
 requireSubModule.RunnableObject = require("./lib/RunnableObject");
+requireSubModule.defaultLogger = require("./lib/defaultLogger");
 
 // Contains exceptions
 requireSubModule.exceptions = require("./lib/exceptions/index");
