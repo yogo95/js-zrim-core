@@ -30,6 +30,7 @@ requireSubModule.ProxyLogger = require("./lib/ProxyLogger");
 requireSubModule.DependencyEntry = require("./lib/DependencyEntry");
 requireSubModule.DependencyManager = require("./lib/DependencyManager");
 requireSubModule.RunnableObject = require("./lib/RunnableObject");
+requireSubModule.ObjectStateWatcher = require("./lib/ObjectStateWatcher");
 requireSubModule.defaultLogger = require("./lib/defaultLogger");
 
 // Contains exceptions
