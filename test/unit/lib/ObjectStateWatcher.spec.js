@@ -218,7 +218,7 @@ describe("Unit Test - ObjectStateWatcher", function () {
 
       spyOn(instance, '_updateSynchronizedState').and.callFake(() => {
         expect(instance.properties.objectDescriptions[0].state).toEqual("myState");
-        testDone()
+        testDone();
       });
 
       instance.properties.objectDescriptions = [{
@@ -228,4 +228,252 @@ describe("Unit Test - ObjectStateWatcher", function () {
       instance._stateChangedHandler(0, "myState");
     });
   }); // #_stateChangedHandler
+
+  describe("#_updateSynchronizedState", function () {
+    it("Given synchronized false and calculate false Then must not emit signal", function (testDone) {
+      const instance = createInstance();
+
+      instance.properties.objectDescriptions = [{
+        state: "NoState"
+      }, {
+        state: "NoState2"
+      }];
+      instance.properties.synchronized = false;
+      instance.properties.stateWaiting = "MyState";
+
+      spyOn(instance, 'emit').and.callFake(() => {});
+
+      instance._updateSynchronizedState();
+
+      setTimeout(() => {
+        expect(instance.emit).not.toHaveBeenCalled();
+        testDone();
+      }, 10);
+    });
+
+    it("Given synchronized false and calculate true Then must emit signal 'synchronized'", function (testDone) {
+      const instance = createInstance();
+
+      instance.properties.objectDescriptions = [{
+        state: "MyState"
+      }, {
+        state: "MyState"
+      }];
+      instance.properties.synchronized = false;
+      instance.properties.stateWaiting = "MyState";
+
+      let timeoutId;
+
+      timeoutId = setTimeout(() => {
+        expect("Must not be called").toBeUndefined();
+        testDone();
+      }, 20);
+      instance.on('synchronized', () => {
+        clearTimeout(timeoutId);
+        expect(instance.properties.synchronized).toBeTruthy();
+        testDone();
+      });
+
+      instance._updateSynchronizedState();
+    });
+
+    it("Given synchronized true and calculate false Then must emit signal 'desynchronized'", function (testDone) {
+      const instance = createInstance();
+
+      instance.properties.objectDescriptions = [{
+        state: "MyState"
+      }, {
+        state: "NoState"
+      }];
+      instance.properties.synchronized = true;
+      instance.properties.stateWaiting = "MyState";
+
+      let timeoutId;
+
+      timeoutId = setTimeout(() => {
+        expect("Must not be called").toBeUndefined();
+        testDone();
+      }, 20);
+      instance.on('desynchronized', () => {
+        clearTimeout(timeoutId);
+        expect(instance.properties.synchronized).toBeFalsy();
+        testDone();
+      });
+
+      instance._updateSynchronizedState();
+    });
+  }); // #_updateSynchronizedState
+
+  describe("#_handleStart", function () {
+    it("Given no object description Then must just call _updateSynchronizedState", function (testDone) {
+      const instance = createInstance();
+
+      spyOn(instance, '_updateSynchronizedState').and.callFake(() => {});
+      const startedSlot = jasmine.createSpy('startedSlot');
+
+      const timeoutId = setTimeout(() => {
+        expect(instance._updateSynchronizedState).toHaveBeenCalledTimes(1);
+        testDone();
+      }, 10);
+
+      instance._handleStart()
+        .then(startedSlot)
+        .catch(error => {
+          expect("Must not be called").toBeUndefined();
+          expect(error).toBeUndefined();
+          clearTimeout(timeoutId);
+          testDone();
+        });
+    });
+
+    it("Given object descriptions Then must call _updateSynchronizedState and listen event", function (testDone) {
+      const instance = createInstance();
+
+      spyOn(instance, '_updateSynchronizedState').and.callFake(() => {});
+      const startedSlot = jasmine.createSpy('startedSlot');
+
+      instance.properties.objectDescriptions = [{
+        object: {
+          on: jasmine.createSpy(),
+          currentState: "myState0"
+        },
+        state: undefined,
+        handler: jasmine.createSpy()
+      }, {
+        object: {
+          on: jasmine.createSpy(),
+          currentState: "myState1"
+        },
+        state: undefined,
+        handler: jasmine.createSpy()
+      }];
+
+      const timeoutId = setTimeout(() => {
+        expect(instance._updateSynchronizedState).toHaveBeenCalledTimes(1);
+        _.each(instance.properties.objectDescriptions, description => {
+          expect(description.object.on).toHaveBeenCalledTimes(1);
+          expect(description.object.on).toHaveBeenCalledWith('currentStateChanged', description.handler);
+          expect(description.state).toEqual(description.object.currentState);
+        });
+        testDone();
+      }, 10);
+
+      instance._handleStart()
+        .then(startedSlot)
+        .catch(error => {
+          expect("Must not be called").toBeUndefined();
+          expect(error).toBeUndefined();
+          clearTimeout(timeoutId);
+          testDone();
+        });
+    });
+  }); // #_handleStart
+
+  describe("#_handlePause", function () {
+    it("Given no object description Then must do nothing", function (testDone) {
+      const instance = createInstance();
+
+      instance._handlePause()
+        .then(() => {
+          expect(true).toBeTruthy();
+          testDone();
+        })
+        .catch(error => {
+          expect("Must not be called").toBeUndefined();
+          expect(error).toBeUndefined();
+          testDone();
+        });
+    });
+
+    it("Given object descriptions Then must remove listener event", function (testDone) {
+      const instance = createInstance();
+
+      instance.properties.objectDescriptions = [{
+        object: {
+          removeListener: jasmine.createSpy()
+        },
+        handler: jasmine.createSpy()
+      }, {
+        object: {
+          removeListener: jasmine.createSpy()
+        },
+        handler: jasmine.createSpy()
+      }];
+
+      instance._handlePause()
+        .then(() => {
+          _.each(instance.properties.objectDescriptions, description => {
+            expect(description.object.removeListener).toHaveBeenCalledTimes(1);
+            expect(description.object.removeListener).toHaveBeenCalledWith('currentStateChanged', description.handler);
+          });
+          testDone();
+        })
+        .catch(error => {
+          expect("Must not be called").toBeUndefined();
+          expect(error).toBeUndefined();
+          testDone();
+        });
+    });
+  }); // #_handlePause
+
+  describe("#_handleResume", function () {
+    it("Then must call _handlerStart", function () {
+      const instance = createInstance();
+
+      const expectedResult = {
+        a: 1
+      };
+      spyOn(instance, '_handleStart').and.callFake(() => expectedResult);
+
+      expect(instance._handleResume()).toBe(expectedResult);
+      expect(instance._handleStart).toHaveBeenCalledTimes(1);
+    });
+  }); // #_handleResume
+
+  describe("#_handleStop", function () {
+    it("Given no object description Then must do nothing", function (testDone) {
+      const instance = createInstance();
+
+      instance._handleStop()
+        .then(() => {
+          expect(true).toBeTruthy();
+          testDone();
+        })
+        .catch(error => {
+          expect("Must not be called").toBeUndefined();
+          expect(error).toBeUndefined();
+          testDone();
+        });
+    });
+
+    it("Given object descriptions Then must remove listener event", function (testDone) {
+      const instance = createInstance();
+
+      instance.properties.objectDescriptions = [{
+        object: {
+          removeListener: jasmine.createSpy()
+        },
+        handler: jasmine.createSpy()
+      }, {
+        object: {
+          removeListener: jasmine.createSpy()
+        },
+        handler: jasmine.createSpy()
+      }];
+
+      instance._handleStop()
+        .then(() => {
+          _.each(instance.properties.objectDescriptions, description => {
+            expect(description.object.removeListener).toHaveBeenCalledTimes(1);
+            expect(description.object.removeListener).toHaveBeenCalledWith('currentStateChanged', description.handler);
+          });
+          testDone();
+        })
+        .catch(error => {
+          expect("Must not be called").toBeUndefined();
+          expect(error).toBeUndefined();
+          testDone();
+        });
+    });
+  }); // #_handlePause
 });
