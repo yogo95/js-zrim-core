@@ -26,6 +26,43 @@ ConnectableObject is a generic object that expose new states and signal.
 Easy way to always have a logger defined. You can add a prefix name.
 All BaseObject contains an internal logger.
 
+### Default logger
+
+You have 2 way to define a default logger in you system. 
+You can use the **defaultLogger** logger function:
+```javascript
+const defaultLogger = require('js-zrim-core').defaultLogger;
+defaultLogger.setDefaultLogger(null, myLogger);
+```
+
+This function only works for the same version of the package.
+Another solution is to define a global default logger manager.
+
+You must define the default logger manager using :
+```javascript
+if (!global.jsZrimCore) {
+  global.jsZrimCore = {};
+}
+global.jsZrimCore.defaultLoggerManager = myDefaultLoggerManager;
+```
+This should be the first thing your application is doing.
+
+#### Requirement
+
+The logger manager must define a function name getVersion which returns the
+implementation version. This may help the module to know how to use the manager.
+
+#### Version 1
+
+The version 1 requires:<br/>
+- string getVersion() : returns "1.m.p" with m you minor version and p your patch version.
+- string[] listLoggerNames() : This function returns the list of know logger names
+- Logger getLogger(string|null|undefined) : This function returns the logger 
+to use with the given name. In case the name is null or undefined, the function
+must return the default logger.
+- void setLogger(string|null|undefined, Logger) : This function define
+a logger for the given name
+
 ## Exceptions
 
 The module expose some generic exceptions.
