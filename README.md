@@ -58,6 +58,7 @@ The version 1 requires:<br/>
 - string getVersion() : returns "1.m.p" with m you minor version and p your patch version.
 - string[] listLoggerNames() : This function returns the list of know logger names
 - Logger getLogger(string|null|undefined) : This function returns the logger 
+- string[] listLoggerNames() : List the logger names known or available
 to use with the given name. In case the name is null or undefined, the function
 must return the default logger.
 - void setLogger(string|null|undefined, Logger) : This function define
