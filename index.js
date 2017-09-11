@@ -31,7 +31,8 @@ requireSubModule.DependencyEntry = require("./lib/DependencyEntry");
 requireSubModule.DependencyManager = require("./lib/DependencyManager");
 requireSubModule.RunnableObject = require("./lib/RunnableObject");
 requireSubModule.ObjectStateWatcher = require("./lib/ObjectStateWatcher");
-requireSubModule.defaultLogger = require("./lib/defaultLogger");
+requireSubModule.defaultLogger = require("./lib/default-logger").defaultLogger;
+requireSubModule.SimpleDefaultLoggerHandler = require("./lib/default-logger").SimpleDefaultLoggerHandler;
 
 // Contains exceptions
 requireSubModule.exceptions = require("./lib/exceptions/index");
