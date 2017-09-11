@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: node:8.4.0-alpine
+      - image: circleci/node:8.4.0
     steps:
       - checkout
       - restore_cache:
@@ -16,7 +16,7 @@ jobs:
             - node_modules
   test:
     docker:
-      - image: node:8.4.0-alpine
+      - image: circleci/node:8.4.0
     steps:
       - checkout
       - run:
