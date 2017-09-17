@@ -1,32 +1,105 @@
-## Synopsis
+# Synopsis
 
 This module contains some generic managers to abstract some access like access to mongodb, or just start to
  create a controller with dependencies.
 
 Each manager has a state that can tell you if it's ready. It also emit signal to tell what's append to it.
 
-## Public
+# Available base classes
 
-### BaseObject
+The module provide those base classes:
+- BaseObject
+- InitializableObject
+- ConnectableObject
+- LoadableObject
+- RunnableObject
+
+# Classes
+
+## BaseObject
 
 BaseObject is a generic function that can be use with prototype 
  inheritance to include states in your object.
  
-### InitializableObject
+## InitializableObject
 
 Generic object that can be initialized.
 
-### ConnectableObject
+### States
+
+The class adds 4 new states:
+- NotInitialized : The current state when you create the object
+- Initializing : The object is currently under initialization
+- Initialized : The initialization succeed
+- Finalizing : The object is currently under finalization
+
+Be aware that the class do not pass to Ready after the initialization succeed.
+
+### Signals
+
+The class adds 6 signals:
+- initializing : An initialization started
+- initializationSucceed : The initialization succeed
+- initializationFailed : The initialization failed
+- finalizing : A finalization started
+- finalizationSucceed : The finalization succeed
+- finalizationFailed : The finalization failed
+
+## SimpleInitializableObject
+
+Same class as *InitializableObject* but after the initialization succeed, the object pass from
+state *Initialized* to *Ready*.
+
+## ConnectableObject
 
 ConnectableObject is a generic object that expose new states and signal. 
  It can be use in manager that expose a connection state like a Dal (MongoDB, Cassandra, etc.).
+ 
+### States
 
-### ProxyLogger
+The class adds 2 new states:
+- Connecting : The object is currently trying to connect
+- Disconnecting : The object is currently trying to disconnect
+
+### Signals
+
+The class adds 8 signals:
+- connecting : The object start connecting
+- connectionFailed : The connection failed
+- connected : The connection succeed
+- connectionLost : The object lost the connection
+- reconnected : The object reconnected
+- disconnecting : The object start disconnecting
+- disconnectionFailed : The disconnection failed
+- disconnected : The disconnection succeed
+
+## LoadableObject
+
+This class provide a way to enable load functionality. The class provide the functions *load*
+and *unLoad*. This base class can be use for configuration, context (loading a configuration or a context).
+
+### States
+
+The class adds 2 new states:
+- Loading : The object is currently loading data
+- UnLoading : The object is currently unloading data
+
+### Signals
+
+The class adds 6 signals:
+- loading : The object start loading data
+- loadFailed : The load failed
+- loaded : The object load data with success
+- unLoading : The object start unloading data
+- unLoadFailed : The unload failed
+- unLoaded : The object unload data with success
+
+## ProxyLogger
 
 Easy way to always have a logger defined. You can add a prefix name.
 All BaseObject contains an internal logger.
 
-### Default logger
+# Default logger
 
 You have 2 way to define a default logger in you system. 
 You can use the **defaultLogger** logger function:
@@ -47,12 +120,12 @@ global.jsZrimCore.defaultLoggerManager = myDefaultLoggerManager;
 ```
 This should be the first thing your application is doing.
 
-#### Requirement
+## Requirement
 
 The logger manager must define a function name getVersion which returns the
 implementation version. This may help the module to know how to use the manager.
 
-#### Version 1
+## Version 1
 
 The version 1 requires:<br/>
 - string getVersion() : returns "1.m.p" with m you minor version and p your patch version.
@@ -64,19 +137,19 @@ must return the default logger.
 - void setLogger(string|null|undefined, Logger) : This function define
 a logger for the given name
 
-## Exceptions
+# Exceptions
 
 The module expose some generic exceptions.
 
-### IllegalStateException
+## IllegalStateException
 
 ``
 var IllegalStateException = require('js-zrim-core').exceptions.IllegalStateException;
 ``
 
-## Code Example
+# Code Example
 
-### Using BaseObject
+## Using BaseObject
 
 Require the BaseObject
 ```
@@ -132,10 +205,9 @@ BaseObject._applyPrototypeTo(BaseObjecExtented);
 BaseObjecExtented.prototype.myFunction = function () {
     this.properties.myProperty;
 };
-
 ```
 
-#### Define property
+### Define property
 
 You can dynamically define a new property. By using this, it will send signal when the value
 has been changed.
@@ -190,7 +262,7 @@ The second signal specialise will have 2 arguments : (**new value**, **previous 
 
 **Warning**, In case of no getter exists, the previous value will be **undefined**.
 
-### Using InitializableObject
+## Using InitializableObject
 
 
 Handling the initialization and finalization
@@ -201,14 +273,18 @@ function BaseObjecExtented() {
 }
 BaseObject._applyPrototypeTo(BaseObjecExtented);
 
-BaseObjecExtented.prototype._handleInitialization(options, callback) {
-    // Do your initialization
-    return callback();
+BaseObjecExtented.prototype._handleInitialization(options) {
+    return new Promise((resolve, reject) => {
+        // Do your initialization
+        resolve();
+    });
 }
 
-BaseObjecExtented.prototype._handleFinalization(options, callback) {
-    // Do your finalization
-    return callback();
+BaseObjecExtented.prototype._handleFinalization(options) {
+    return new Promise((resolve, reject) => {
+        // Do your finalization
+        resolve();
+    });
 }
 ```
 
@@ -220,47 +296,38 @@ function BaseObjecExtented() {
 }
 BaseObject._applyPrototypeTo(BaseObjecExtented);
 
-BaseObjecExtented.prototype._handleInitialization(options, callback) {
-    var _this = this;
-    BaseObject.prototype._handleInitialization.call(this, options, function (error) {
-        if (error) {
-            _this.logger.error("[%s][Error] %s", "_handleInitialization", error.toString(), error);
-            return callback(error);
-        }
-        // Do your initialization
-        // ...
-        return callback();
-    });
-}
+BaseObjecExtented.prototype._handleInitialization(options) {
+    return BaseObject.prototype._handleInitialization.call(this, options)
+        .then(() => {
+            return new Promise((resolve, reject) => {
+                // Your initialization
+                resolve();
+            });
+        });
+};
 
-BaseObjecExtented.prototype._handleFinalization(options, callback) {
-    var _this = this;
-    
-    // Do you finalization
-    // ...
-    
-    // Then call the parent
-    BaseObject.prototype._handleFinalization.call(this, options, function (error) {
-        if (error) {
-            _this.logger.error("[%s][Error] %s", "_handleFinalization", error.toString(), error);
-            return callback(error);
-        }
-        return callback();
-    });
+BaseObjecExtented.prototype._handleFinalization(options) {
+    return BaseObject.prototype._handleFinalization.call(this, options)
+        .then(() => {
+            return new Promise((resolve, reject) => {
+                // Your finalization
+                resolve();
+            });
+        });
 }
 ```
 
 Using the logger
 
 ```
-BaseObjecExtented.prototype._handleInitialization(options, callback) {
+BaseObjecExtented.prototype._handleInitialization(options) {
     // ...
     this.logger.debug("Use %s", "me"); // Will log : [BaseObjecExtented] Use me
     // ...
 }
 ```
 
-#### Define property
+### Define property
 
 You can define a property that will emit automatically signals:
 - propertyChanged : (propertyName, newValue, previousValue)
@@ -337,7 +404,7 @@ console.log("a=", x.a);
 // a=45
 ```
 
-### ConnectableObject
+## ConnectableObject
 
 Handling the connection and disconnection
 
@@ -347,14 +414,18 @@ function ConnectableObjecExtented() {
 }
 ConnectableObject._applyPrototypeTo(ConnectableObjecExtented);
 
-ConnectableObjecExtented.prototype._handleConnection(options, callback) {
-    // Do your connection
-    return callback();
+ConnectableObjecExtented.prototype._handleConnection(options) {
+    return new Promise((resolve, reject) => {
+        // Do your connection
+        resolve();
+    });
 }
 
-ConnectableObjecExtented.prototype._handleDisconnection(options, callback) {
-    // Do your disconnection
-    return callback();
+ConnectableObjecExtented.prototype._handleDisconnection(options) {
+    return new Promise((resolve, reject) => {
+        // Do your disconnection
+        resolve();
+    });
 }
 ```
 
@@ -363,7 +434,7 @@ override the function **_handleFinalization**.
 
 
 
-## Installation
+# Installation
 
 Production
 ```
@@ -376,7 +447,7 @@ npm install js-zrim-core
 ```
 
 
-## Tests
+# Tests
 
 To run the test you need to install in development mode.
 
@@ -384,6 +455,6 @@ To run the test you need to install in development mode.
 npm test
 ```
 
-## License
+# License
 
 Zrim-Everything - yogo95 - CeCILL v2
