@@ -2,11 +2,11 @@
  * Unit test for StringUtils
  */
 
-var _ = require("lodash");
+const _ = require("lodash");
 
 describe("Unit test - StringUtils", function () {
 
-  var stringUtils = require("../../../../lib/common/StringUtils");
+  const stringUtils = require("../../../../lib/common/StringUtils");
 
   describe("When require", function () {
     it("Then must return object", function () {
@@ -22,7 +22,7 @@ describe("Unit test - StringUtils", function () {
 
   describe("When is", function () {
     it("Given type not string Then must return false", function () {
-      var testsArgs = [
+      const testsArgs = [
         [],
         [[]],
         [{}],
@@ -43,7 +43,7 @@ describe("Unit test - StringUtils", function () {
 
   describe("When isEmpty", function () {
     it("Given undefined/null/false Then must return true", function () {
-      var testsArgs = [
+      const testsArgs = [
         [],
         [false],
         [null]
@@ -55,11 +55,11 @@ describe("Unit test - StringUtils", function () {
     });
 
     it("Given non string Then must return false", function () {
-      var testsArgs = [
+      const testsArgs = [
         [[]],
         [{}],
         [1],
-        [true],
+        [true]
       ];
 
       _.each(testsArgs, function (args) {
@@ -78,7 +78,7 @@ describe("Unit test - StringUtils", function () {
 
   describe("When isNotEmpty", function () {
     it("Given non string Then must return false", function () {
-      var testsArgs = [
+      const testsArgs = [
         [],
         [[]],
         [{}],
@@ -103,7 +103,7 @@ describe("Unit test - StringUtils", function () {
 
   describe("When isBlank", function () {
     it("Given undefined/null/false Then must return true", function () {
-      var testsArgs = [
+      const testsArgs = [
         [],
         [null],
         [false]
@@ -116,7 +116,7 @@ describe("Unit test - StringUtils", function () {
 
 
     it("Given non string Then must return false", function () {
-      var testsArgs = [
+      const testsArgs = [
         [[]],
         [{}],
         [1],
@@ -140,7 +140,7 @@ describe("Unit test - StringUtils", function () {
 
   describe("When ltrim", function () {
     it("Given non string Then must return the argument", function () {
-      var testsArgs = [
+      const testsArgs = [
         [],
         [[]],
         [{}],
@@ -168,7 +168,7 @@ describe("Unit test - StringUtils", function () {
 
   describe("When rtrim", function () {
     it("Given non string Then must return the argument", function () {
-      var testsArgs = [
+      const testsArgs = [
         [],
         [[]],
         [{}],
@@ -196,7 +196,7 @@ describe("Unit test - StringUtils", function () {
 
   describe("When trim", function () {
     it("Given non string Then must return the argument", function () {
-      var testsArgs = [
+      const testsArgs = [
         [],
         [[]],
         [{}],
@@ -225,8 +225,8 @@ describe("Unit test - StringUtils", function () {
 
   describe("When equalsIgnoreCase", function () {
     it("Given non string different Then must return false", function () {
-      var testsArgs = [
-        [, []],
+      const testsArgs = [
+        [undefined, []],
         [[], {}],
         [{}, []],
         [1, 2],
@@ -242,7 +242,7 @@ describe("Unit test - StringUtils", function () {
     });
 
     it("Given non string equal Then must return true", function () {
-      var testsArgs = [
+      const testsArgs = [
         [],
         [1, 1],
         [true, true],

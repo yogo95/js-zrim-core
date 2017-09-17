@@ -4,8 +4,7 @@
 
 const ProxyLogger = require('../../../lib/ProxyLogger');
 
-const _ = require('lodash')
-  ;
+const _ = require('lodash');
 
 describe("Unit Test - ProxyLogger", function () {
   describe("When require the manager", function () {
@@ -35,17 +34,17 @@ describe("Unit Test - ProxyLogger", function () {
     });
 
     it("Given target Then must set the internal property", function () {
-      var target = {
+      const target = {
         a: 8
       };
-      var instance = new ProxyLogger({
+      const instance = new ProxyLogger({
         target: target
       });
       expect(instance.properties.target).toBe(target);
     });
 
     it("Given prefixes as string Then must set internal properties prefixes and prefixLog", function () {
-      var instance = new ProxyLogger({
+      const instance = new ProxyLogger({
         prefixes: "az"
       });
 
@@ -56,11 +55,11 @@ describe("Unit Test - ProxyLogger", function () {
     });
 
     it("Given prefixes as string array Then must set internal properties prefixes and prefixLog", function () {
-      var prefixes = [
+      const prefixes = [
         "az",
         "l"
       ];
-      var instance = new ProxyLogger({
+      const instance = new ProxyLogger({
         prefixes: prefixes
       });
 
@@ -639,7 +638,7 @@ describe("Unit Test - ProxyLogger", function () {
         expect(mergeResult()).toEqual({
           a: 1,
           b: 6
-        })
+        });
       }
     });
   });

@@ -2,13 +2,12 @@
  * Unit Test - BaseObject
  */
 
-var BaseObject = require("../../../lib/BaseObject");
+const BaseObject = require("../../../lib/BaseObject");
 
-var _ = require('lodash'),
-  IllegalStateException = require("../../../lib/exceptions/IllegalStateException")
-  ;
+const _ = require('lodash'),
+  IllegalStateException = require("../../../lib/exceptions/IllegalStateException");
 
-var DEFAULT_TIMEOUT = 2000;
+const DEFAULT_TIMEOUT = 2000;
 
 describe("Unit Test - objectManager", function () {
 
@@ -21,7 +20,7 @@ describe("Unit Test - objectManager", function () {
     it("Must have the expected States", function () {
       expect(BaseObject.States).toEqual(jasmine.any(Object));
       if (_.isObject(BaseObject.States)) {
-        var expectedStates = {
+        const expectedStates = {
           None: "None",
           Ready: "Ready"
         };
@@ -33,7 +32,7 @@ describe("Unit Test - objectManager", function () {
     it("Must have the expected Signals", function () {
       expect(BaseObject.Signals).toEqual(jasmine.any(Object));
       if (_.isObject(BaseObject.Signals)) {
-        var expectedSignals = {
+        const expectedSignals = {
           ready: "ready",
           currentStateChanged: "currentStateChanged",
           ignoreSignalsChanged: "ignoreSignalsChanged",
@@ -48,12 +47,12 @@ describe("Unit Test - objectManager", function () {
 
   describe("When instantiate", function () {
     it("When not using the new operator Then must return new instance", function () {
-      var value = BaseObject();
+      const value = BaseObject();
       expect(value).toEqual(jasmine.any(BaseObject));
     });
 
     it("When using the new operator must return new instance", function () {
-      var value = new BaseObject();
+      const value = new BaseObject();
       expect(value).toEqual(jasmine.any(BaseObject));
     });
   }); // End of When instantiate
@@ -61,19 +60,19 @@ describe("Unit Test - objectManager", function () {
   describe("When checking the instance", function () {
     describe("Property ignoreSignals", function () {
       it("When get ignoreSignals without setting it Then must return false", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         expect(baseObject.ignoreSignals).toBe(false);
       });
 
       it("When set ignoreSignals Then must have the new value", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         expect(baseObject.ignoreSignals).toBe(false);
         baseObject.ignoreSignals = true;
         expect(baseObject.ignoreSignals).toBe(true);
       });
 
       it("When set ignoreSignals Then must emit ignoreSignalsChanged", function (testDone) {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
 
         baseObject.on("ignoreSignalsChanged", function (newValue, previousValue) {
           expect(newValue).toBe(true);
@@ -85,7 +84,7 @@ describe("Unit Test - objectManager", function () {
       }, 3000);
 
       it("Given same value When set ignoreSignals Then must not emit ignoreSignalsChanged", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
 
         spyOn(baseObject, "on");
 
@@ -94,7 +93,7 @@ describe("Unit Test - objectManager", function () {
       });
 
       it("Given new value When set ignoreSignals Then must emit signal flagChanged", function (testDone) {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
 
         baseObject.on("flagChanged", function (flagName, newValue, previousValue) {
           expect(flagName).toEqual("ignoreSignals");
@@ -109,34 +108,34 @@ describe("Unit Test - objectManager", function () {
 
     describe("Property currentState", function () {
       it("When get currentState at beginning Then must be NotInitialized", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         expect(baseObject.currentState).toEqual(BaseObject.States.None);
       });
 
       it("Given valid new state When set Then must change the value", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         expect(baseObject.currentState).toEqual(BaseObject.States.None);
         baseObject.currentState = BaseObject.States.Ready;
         expect(baseObject.currentState).toEqual(BaseObject.States.Ready);
       });
 
       it("Given invalid new state When set Then must not change the value", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         expect(baseObject.currentState).toEqual(BaseObject.States.None);
         baseObject.currentState = "This is an invalid state";
         expect(baseObject.currentState).toEqual(BaseObject.States.None);
       });
 
       it("Given invalid new state (not string) When set Then must not change the value", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         expect(baseObject.currentState).toEqual(BaseObject.States.None);
         baseObject.currentState = new Function();
         expect(baseObject.currentState).toEqual(BaseObject.States.None);
       });
 
       it("Given new value When set Then must emit currentStateChanged", function (testDone) {
-        var baseObject = new BaseObject();
-        var currentState = baseObject.currentState;
+        const baseObject = new BaseObject();
+        const currentState = baseObject.currentState;
 
         baseObject.on("currentStateChanged", function (newValue, previousValue) {
           expect(previousValue).toEqual(currentState);
@@ -148,8 +147,8 @@ describe("Unit Test - objectManager", function () {
       }, 3000);
 
       it("Given same value When set Then must not emit currentStateChanged", function () {
-        var baseObject = new BaseObject();
-        var currentState = baseObject.currentState;
+        const baseObject = new BaseObject();
+        const currentState = baseObject.currentState;
 
         spyOn(baseObject, "on");
 
@@ -158,13 +157,13 @@ describe("Unit Test - objectManager", function () {
       });
 
       it("Given state ready When isReady Then must return true", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         baseObject.currentState = BaseObject.States.Ready;
         expect(baseObject.isReady()).toBe(true);
       });
 
       it("Given state different that ready When isReady Then must return false", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         baseObject.currentState = BaseObject.States.None;
         expect(baseObject.isReady()).toBe(false);
       });
@@ -172,7 +171,7 @@ describe("Unit Test - objectManager", function () {
 
     describe("When disabling the emit function", function () {
       it("Then must no be called", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
         baseObject.currentState = BaseObject.States.None;
 
         baseObject.ignoreSignals = true;
@@ -185,9 +184,9 @@ describe("Unit Test - objectManager", function () {
 
     describe("When check logger", function () {
       it("Given a logger with level is not debug When isDebugEnabled Then must return false", function () {
-        var baseObject = new BaseObject();
+        const baseObject = new BaseObject();
 
-        var response = baseObject.logger.isDebugEnabled();
+        const response = baseObject.logger.isDebugEnabled();
         expect(response).toBeFalsy();
       });
     }); // End of When check logger
@@ -206,7 +205,7 @@ describe("Unit Test - objectManager", function () {
       }
       BaseObject._applyPrototypeTo(TestA);
 
-      var a = new TestA();
+      const a = new TestA();
       expect(a).toEqual(jasmine.any(TestA));
       expect(a).toEqual(jasmine.any(BaseObject));
       expect(TestA.States).toEqual(BaseObject.States);
@@ -228,7 +227,7 @@ describe("Unit Test - objectManager", function () {
         }
       });
 
-      var a = new TestA();
+      const a = new TestA();
       expect(a).toEqual(jasmine.any(TestA));
       expect(a).toEqual(jasmine.any(BaseObject));
       expect(TestA.States).toEqual(_.merge({}, BaseObject.States, {
@@ -251,7 +250,7 @@ describe("Unit Test - objectManager", function () {
       }
       TestA._applyPrototypeTo(TestB);
 
-      var b = new TestB();
+      const b = new TestB();
       expect(b).toEqual(jasmine.any(TestB));
       expect(b).toEqual(jasmine.any(TestA));
       expect(b).toEqual(jasmine.any(BaseObject));
@@ -263,7 +262,7 @@ describe("Unit Test - objectManager", function () {
   }); // End of _applyPrototypeTo
 
   describe("When _defineProperty", function () {
-    var validOptions = {
+    const validOptions = {
       set: function () {
 
       },
@@ -273,7 +272,7 @@ describe("Unit Test - objectManager", function () {
     };
 
     it("Given invalid constructor Then must throw TypeError", function () {
-      var args = [
+      const args = [
         '',
         undefined,
         {},
@@ -288,7 +287,7 @@ describe("Unit Test - objectManager", function () {
     });
 
     it("Given invalid public name Then must throw TypeError", function () {
-      var args = [
+      const args = [
         '',
         '    ',
         undefined,
@@ -305,7 +304,7 @@ describe("Unit Test - objectManager", function () {
     });
 
     it("Given invalid options Then must throw TypeError", function () {
-      var args = [
+      const args = [
         '',
         undefined,
         null,
@@ -319,14 +318,14 @@ describe("Unit Test - objectManager", function () {
     });
 
     it("Given invalid options.set Then must throw TypeError", function () {
-      var args = [
+      const args = [
         '',
         12,
         {}
       ];
       _.each(args, function (el) {
         expect(function () {
-          var options = _.clone(validOptions);
+          const options = _.clone(validOptions);
           options.set = el;
           BaseObject._defineProperty(function () { }, 'a', options);
         }).toThrow();
@@ -334,14 +333,14 @@ describe("Unit Test - objectManager", function () {
     });
 
     it("Given invalid options.get Then must throw TypeError", function () {
-      var args = [
+      const args = [
         '',
         12,
         {}
       ];
       _.each(args, function (el) {
         expect(function () {
-          var options = _.clone(validOptions);
+          const options = _.clone(validOptions);
           options.get = el;
           BaseObject._defineProperty(function () { }, 'a', options);
         }).toThrow();
@@ -349,7 +348,7 @@ describe("Unit Test - objectManager", function () {
     });
 
     it("Given invalid options.enumerable Then must throw TypeError", function () {
-      var args = [
+      const args = [
         '',
         12,
         {},
@@ -359,7 +358,7 @@ describe("Unit Test - objectManager", function () {
       ];
       _.each(args, function (el) {
         expect(function () {
-          var options = _.clone(validOptions);
+          const options = _.clone(validOptions);
           options.enumerable = el;
           BaseObject._defineProperty(function () { }, 'a', options);
         }).toThrow();
@@ -367,7 +366,7 @@ describe("Unit Test - objectManager", function () {
     });
 
     it("Given invalid options.configurable Then must throw TypeError", function () {
-      var args = [
+      const args = [
         '',
         12,
         {},
@@ -377,7 +376,7 @@ describe("Unit Test - objectManager", function () {
       ];
       _.each(args, function (el) {
         expect(function () {
-          var options = _.clone(validOptions);
+          const options = _.clone(validOptions);
           options.configurable = el;
           BaseObject._defineProperty(function () { }, 'a', options);
         }).toThrow();

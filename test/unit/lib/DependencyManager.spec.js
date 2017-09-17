@@ -4,8 +4,7 @@
 
 const DependencyManager = require("./../../../lib/DependencyManager"),
   DependencyEntry = require("./../../../lib/DependencyEntry"),
-  _ = require("lodash")
-  ;
+  _ = require("lodash");
 
 describe("Unit test - DependencyManager", function () {
 
@@ -27,7 +26,7 @@ describe("Unit test - DependencyManager", function () {
       expect(instance).toEqual(jasmine.any(DependencyManager));
     });
   }); // End of When instantiate
-  
+
   describe("#_refreshIndexes", function () {
     it("Given no dependencies Then must do nothing", function () {
       const instance = new DependencyManager();
@@ -37,16 +36,13 @@ describe("Unit test - DependencyManager", function () {
       expect(instance._removeIndexes).toHaveBeenCalled();
       expect(instance._registerIndex).not.toHaveBeenCalled();
     });
-    
+
     it("Given dependencies Then must call _registerIndex", function () {
-      const dependencies = [
-        {
+      const dependencies = [{
           a: 1
-        },
-        {
+        }, {
           b: 2
-        }
-      ], expectedCalls = [];
+        }], expectedCalls = [];
 
       _.each(dependencies, function (dependency, index) {
         expectedCalls.push([dependency, index]);
@@ -332,7 +328,7 @@ describe("Unit test - DependencyManager", function () {
     it("Given entry that exists Then must return expected value", function () {
       const instance = new DependencyManager(),
         expectedValue = {
-        b: 12
+          b: 12
         };
       instance.properties.dependencies = [
         {

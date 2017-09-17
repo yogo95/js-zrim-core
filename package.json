@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npm run unitTest",
     "unitTest": "node node_modules/istanbul/lib/cli.js cover node_modules/jasmine/bin/jasmine.js JASMINE_CONFIG_PATH=test/unit/jasmine.config.json",
-    "unitTestWithoutCoverage": "jasmine JASMINE_CONFIG_PATH=test/unit/jasmine.config.json"
+    "unitTestWithoutCoverage": "jasmine JASMINE_CONFIG_PATH=test/unit/jasmine.config.json",
+    "codeStyleValidation": "eslint lib/** api/** test/** *.js --ignore-pattern *.json"
   },
   "repository": {
     "type": "git",
