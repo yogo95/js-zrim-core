@@ -2,10 +2,9 @@
  * Unit test : File that contains all exceptions
  */
 
-var exceptions = require('../../../../lib/exceptions/index');
+const exceptions = require('../../../../lib/exceptions/index');
 
-var _ = require('lodash')
-  ;
+const _ = require('lodash');
 
 describe("Unit Test - exceptions/index.js", function () {
   describe("When require", function () {
@@ -14,7 +13,7 @@ describe("Unit Test - exceptions/index.js", function () {
     });
 
     // Create the it for all exception
-    var expectedExceptions = [
+    const expectedExceptions = [
       'IllegalStateException'
     ];
     _.each(expectedExceptions, function (exceptionName) {

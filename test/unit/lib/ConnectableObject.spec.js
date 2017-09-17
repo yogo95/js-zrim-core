@@ -6,8 +6,7 @@ const ConnectableObject = require("../../../lib/ConnectableObject");
 
 const _ = require('lodash'),
   InitializableObject = require('../../../lib/InitializableObject'),
-  IllegalStateException = require("../../../lib/exceptions/IllegalStateException")
-  ;
+  IllegalStateException = require("../../../lib/exceptions/IllegalStateException");
 
 const DEFAULT_TIMEOUT = 2000;
 
@@ -282,7 +281,8 @@ describe("Unit Test - ConnectableObject", function () {
       spyOn(instance, 'canConnect').and.callFake(function () {
         return true;
       });
-      instance.connect().then(() => {
+      instance.connect()
+        .then(() => {
           expect(instance.currentState).toEqual("Ready");
           expect(slotConnected).toHaveBeenCalled();
           testDone();
@@ -352,7 +352,7 @@ describe("Unit Test - ConnectableObject", function () {
       spyOn(instance, '_handleDisconnection').and.callFake(function () {
         return new Promise((resolve, reject) => {
           reject(expectedError);
-        })
+        });
       });
       instance.disconnect()
         .then((() => {
@@ -501,7 +501,7 @@ describe("Unit Test - ConnectableObject", function () {
         .catch(() => {
           expect(false).toBeTruthy();
           testDone();
-        })
+        });
     }, DEFAULT_TIMEOUT);
   }); // End of _onConnectionLost
 

@@ -6,8 +6,7 @@ const LoadableObject = require("../../../lib/LoadableObject");
 
 const _ = require('lodash'),
   InitializableObject = require('../../../lib/InitializableObject'),
-  IllegalStateException = require("../../../lib/exceptions/IllegalStateException")
-  ;
+  IllegalStateException = require("../../../lib/exceptions/IllegalStateException");
 
 const DEFAULT_TIMEOUT = 2000;
 
@@ -280,7 +279,8 @@ describe("Unit Test - LoadableObject", function () {
       spyOn(instance, 'canLoad').and.callFake(function () {
         return true;
       });
-      instance.load().then(() => {
+      instance.load()
+        .then(() => {
           expect(instance.currentState).toEqual("Ready");
           expect(slotConnected).toHaveBeenCalled();
           testDone();
@@ -350,7 +350,7 @@ describe("Unit Test - LoadableObject", function () {
       spyOn(instance, '_handleUnLoad').and.callFake(function () {
         return new Promise((resolve, reject) => {
           reject(expectedError);
-        })
+        });
       });
       instance.unLoad()
         .then((() => {
