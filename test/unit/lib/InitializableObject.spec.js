@@ -443,4 +443,73 @@ describe("Unit Test - InitializableObject", function () {
         });
     }, DEFAULT_TIMEOUT);
   }); // End of finalize
+
+  describe('#_handleFinalization', function () {
+    it('Given canStop and canFinalize to return true Then must call expected function', function (testDone) {
+      const instance = createInstance();
+
+      const objectStateWatcher = {
+        canStop: jasmine.createSpy('canStop').and.returnValue(true),
+        stop: jasmine.createSpy('stop').and.callFake(() => new Promise(resolve => setImmediate(resolve, {}))),
+        canFinalize: jasmine.createSpy('canFinalize').and.returnValue(true),
+        finalize: jasmine.createSpy('finalize').and.callFake(() => new Promise(resolve => setImmediate(resolve, {})))
+      };
+      instance.properties._objectStateWatcherContext = {
+        instance: objectStateWatcher
+      };
+
+      const options = {
+        a: 99
+      };
+
+      instance._handleFinalization(options)
+        .then(() => {
+          expect(objectStateWatcher.canStop).toHaveBeenCalledTimes(1);
+          expect(objectStateWatcher.canFinalize).toHaveBeenCalledTimes(1);
+          expect(objectStateWatcher.stop).toHaveBeenCalledTimes(1);
+          expect(objectStateWatcher.finalize).toHaveBeenCalledTimes(1);
+          expect(objectStateWatcher.finalize).toHaveBeenCalledWith(options);
+          expect(instance.properties._objectStateWatcherContext).toBeUndefined();
+          testDone();
+        })
+        .catch(error => {
+          expect(error).toBeUndefined();
+          expect('Must not be called').toBeUndefined();
+          testDone();
+        });
+    });
+
+    it('Given canStop and canFinalize to return false Then must do nothing', function (testDone) {
+      const instance = createInstance();
+
+      const objectStateWatcher = {
+        canStop: jasmine.createSpy('canStop').and.returnValue(false),
+        stop: jasmine.createSpy('stop').and.callFake(() => new Promise(resolve => setImmediate(resolve, {}))),
+        canFinalize: jasmine.createSpy('canFinalize').and.returnValue(false),
+        finalize: jasmine.createSpy('finalize').and.callFake(() => new Promise(resolve => setImmediate(resolve, {})))
+      };
+      instance.properties._objectStateWatcherContext = {
+        instance: objectStateWatcher
+      };
+
+      const options = {
+        a: 99
+      };
+
+      instance._handleFinalization(options)
+        .then(() => {
+          expect(objectStateWatcher.canStop).toHaveBeenCalledTimes(1);
+          expect(objectStateWatcher.canFinalize).toHaveBeenCalledTimes(1);
+          expect(objectStateWatcher.stop).not.toHaveBeenCalled();
+          expect(objectStateWatcher.finalize).not.toHaveBeenCalled();
+          expect(instance.properties._objectStateWatcherContext).toBeUndefined();
+          testDone();
+        })
+        .catch(error => {
+          expect(error).toBeUndefined();
+          expect('Must not be called').toBeUndefined();
+          testDone();
+        });
+    });
+  }); // #_handleFinalization
 });

@@ -1,5 +1,5 @@
 describe("Unit Test - ObjectStateWatcher", function () {
-  const ObjectStateWatcher = require('./../../../lib/ObjectStateWatcher'),
+  const ObjectStateWatcher = require('./../../../lib/object-state-watcher').ObjectStateWatcher,
     _ = require('lodash'),
     RunnableObject = require("./../../../lib/RunnableObject"),
     BaseObject = require("./../../../lib/BaseObject"),
