@@ -280,6 +280,109 @@ describe("Unit Test - ProxyLogger", function () {
       expect(targetMock.debug).toHaveBeenCalledWith("[ab][cd] az");
       expect(targetMock.debug).toHaveBeenCalledWith("[ab][cd][az]");
     });
+
+    it('Given meta data as first Then must add it to the end', function () {
+      const instance = new ProxyLogger({
+        prefixes: [
+          "ab",
+          "cd"
+        ]
+      });
+
+      const metaDataIn = {
+        a: 854
+      };
+
+      spyOn(instance, 'generateMetaData').and.returnValue({
+        c: 77
+      });
+
+      const targetMock = {
+        log: jasmine.createSpy("log"),
+        debug: jasmine.createSpy("debug")
+      };
+      instance.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
+        return targetMock;
+      });
+
+      instance.log("debug", metaDataIn, "az");
+      instance.log("debug", "[az]");
+      expect(instance.getRootTarget).toHaveBeenCalled();
+      expect(targetMock.log).not.toHaveBeenCalled();
+      expect(targetMock.debug).toHaveBeenCalledWith("[ab][cd] az", {
+        a: 854,
+        c: 77
+      });
+      expect(targetMock.debug).toHaveBeenCalledWith("[ab][cd][az]", {
+        c: 77
+      });
+      expect(instance.generateMetaData).toHaveBeenCalledTimes(2);
+    });
+
+    it('Given meta data as last Then must add it to the end', function () {
+      const instance = new ProxyLogger({
+        prefixes: [
+          "ab",
+          "cd"
+        ]
+      });
+
+      const metaDataIn = {
+        a: 854
+      };
+
+      spyOn(instance, 'generateMetaData').and.returnValue({});
+
+      const targetMock = {
+        log: jasmine.createSpy("log"),
+        debug: jasmine.createSpy("debug")
+      };
+      instance.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
+        return targetMock;
+      });
+
+      instance.log("debug", "az", metaDataIn);
+      expect(instance.getRootTarget).toHaveBeenCalled();
+      expect(targetMock.log).not.toHaveBeenCalled();
+      expect(targetMock.debug).toHaveBeenCalledWith("[ab][cd] az", metaDataIn);
+      expect(instance.generateMetaData).toHaveBeenCalledTimes(1);
+    });
+
+    it('Given meta data as first & last Then must add it to the end', function () {
+      const instance = new ProxyLogger({
+        prefixes: [
+          "ab",
+          "cd"
+        ]
+      });
+
+      spyOn(instance, 'generateMetaData').and.returnValue({
+        c: 77
+      });
+
+      const targetMock = {
+        log: jasmine.createSpy("log"),
+        debug: jasmine.createSpy("debug")
+      };
+      instance.getRootTarget = jasmine.createSpy("getRootTarget").and.callFake(function () {
+        return targetMock;
+      });
+
+      instance.log("debug", {
+        a: 555,
+        b: 852
+      }, "az", {
+        a: 5210
+      });
+      expect(instance.getRootTarget).toHaveBeenCalled();
+      expect(targetMock.log).not.toHaveBeenCalled();
+      expect(targetMock.debug).toHaveBeenCalledWith("[ab][cd] az", {
+        a: 5210,
+        b: 852,
+        c: 77
+      });
+      expect(instance.generateMetaData).toHaveBeenCalledTimes(1);
+    });
   }); // End of When log
 
   describe("When of", function () {
